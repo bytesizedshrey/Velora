@@ -1,7 +1,7 @@
 import express from "express"
 import cookieParser from "cookie-parser"
 import morgan from "morgan"
-import authRouter from 'backend/src/routes/auth.routes.js'
+import authRouter from './routes/auth.routes.js'
 
 const app = express()
 
