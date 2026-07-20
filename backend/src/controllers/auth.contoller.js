@@ -29,7 +29,7 @@ async function sendTokenResponse(user, res, message, statusCode = 200) {
 }
 
 export const register = async (req, res) => {
-    const { email, contact, password, fullname, role } = req.body
+    const { email, contact, password, fullname, role,isSeller } = req.body
 
     try {
         const existingUser = await userModel.findOne({
@@ -50,7 +50,7 @@ export const register = async (req, res) => {
             contact,
             password: hashedPassword,
             fullname,
-            role: role || "buyer"
+            role: isSeller ? "seller" : "buyer"
         })
 
         return await sendTokenResponse(user, res, "User registered successfully.", 201)
