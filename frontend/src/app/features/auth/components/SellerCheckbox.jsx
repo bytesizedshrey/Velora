@@ -6,10 +6,11 @@ import useAudio from "@/shared/hooks/useAudio"
  * Controlled component: checked/onChange come from parent.
  */
 const SellerCheckbox = ({ checked, onChange }) => {
-  const { tick } = useAudio()
+  const { tick, hover } = useAudio()
   return (
     <label
       htmlFor="isSeller"
+      onMouseEnter={hover}
       style={{
         display: "flex",
         alignItems: "flex-start",

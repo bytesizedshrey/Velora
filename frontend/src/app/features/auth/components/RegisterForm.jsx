@@ -1,7 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate } from "react-router"
 import SellerCheckbox from "./SellerCheckbox"
 import LiquidMetalButton from "@/components/ui/liquid-metal"
 import useAudio from "@/shared/hooks/useAudio"
+import { registerUser, clearError } from "../state/auth.slice"
 
 /**
  * FormField
@@ -9,7 +12,7 @@ import useAudio from "@/shared/hooks/useAudio"
  */
 const FormField = ({ id, label, type = "text", placeholder, value, onChange }) => {
   const [focused, setFocused] = useState(false)
-  const { focus } = useAudio()
+  const { focus, hover } = useAudio()
 
   return (
     <div className="form-field" style={{ display: "flex", flexDirection: "column" }}>
@@ -57,6 +60,7 @@ const FormField = ({ id, label, type = "text", placeholder, value, onChange }) =
           caretColor: "#ffffff",
         }}
         onMouseEnter={(e) => {
+          hover()
           if (!focused) {
             e.target.style.background = "var(--color-surface-hover)"
           }
@@ -106,7 +110,7 @@ const EyeIcon = ({ open }) => (
 const PasswordField = ({ value, onChange }) => {
   const [focused, setFocused] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { focus } = useAudio()
+  const { focus, hover } = useAudio()
 
   return (
     <div className="form-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -131,6 +135,7 @@ const PasswordField = ({ value, onChange }) => {
           placeholder="Min. 6 characters"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onMouseEnter={hover}
           onFocus={() => {
             setFocused(true)
             focus()
@@ -174,7 +179,10 @@ const PasswordField = ({ value, onChange }) => {
             padding: 0,
             transition: "color 0.15s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-text-primary)")}
+          onMouseEnter={(e) => {
+            hover()
+            e.currentTarget.style.color = "var(--color-text-primary)"
+          }}
           onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
         >
           <EyeIcon open={showPassword} />
@@ -187,7 +195,6 @@ const PasswordField = ({ value, onChange }) => {
 /**
  * RegisterForm
  * All five fields + CTA button for the Velora register page.
- * UI only — no API, no Redux integration.
  */
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -198,16 +205,40 @@ const RegisterForm = () => {
     isSeller: false,
   })
 
-  const update = (field) => (value) =>
+  const update = (field) => (value) => {
+    if (error) dispatch(clearError())
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
 
-  const { click } = useAudio()
+  const { click, hover } = useAudio()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { loading, error } = useSelector((state) => state.auth)
 
-  const handleSubmit = (e) => {
+  // Clear errors when unmounting
+  useEffect(() => {
+    return () => {
+      dispatch(clearError())
+    }
+  }, [dispatch])
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     click()
-    // API integration will be added when auth service is implemented
-    console.log("[RegisterForm] form data:", formData)
+
+    // Map fullName to fullname (as backend expects)
+    const payload = {
+      fullname: formData.fullName,
+      contact: formData.contact,
+      email: formData.email,
+      password: formData.password,
+      isSeller: formData.isSeller
+    }
+
+    const resultAction = await dispatch(registerUser(payload))
+    if (registerUser.fulfilled.match(resultAction)) {
+      navigate("/") // Navigate to home on success
+    }
   }
 
   return (
@@ -256,25 +287,45 @@ const RegisterForm = () => {
         />
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div
+          style={{
+            color: "#ff6b6b",
+            fontSize: "0.85rem",
+            fontFamily: "var(--font-body)",
+            textAlign: "center",
+            padding: "0.5rem",
+            background: "rgba(255, 107, 107, 0.1)",
+            borderRadius: "var(--radius-md)",
+            border: "1px solid rgba(255, 107, 107, 0.2)"
+          }}
+        >
+          {error}
+        </div>
+      )}
+
       {/* Submit */}
       <div
         className="form-field"
-        style={{ paddingTop: "0.5rem", marginLeft: "8rem" }}
+        style={{ paddingTop: "0.5rem" }}
       >
         <LiquidMetalButton
           type="submit"
           size="xl"
           borderWidth={3}
-          className="w-full justify-center"
+          disabled={loading}
+          className="w-1 justify-center"
           metalConfig={{
             colorBack: "#1a1a1a",
             colorTint: "#d4d4d4",
-            speed: 1,
-            distortion: 2,
+            speed: loading ? 2 : 1,
+            distortion: loading ? 3 : 2,
           }}
-          style={{ width: "50%" }}
+          onMouseEnter={hover}
+          style={{ width: "50%", opacity: loading ? 0.7 : 1 }}
         >
-          Create Account
+          {loading ? "Creating Account..." : "Create Account"}
         </LiquidMetalButton>
       </div>
 
@@ -298,7 +349,10 @@ const RegisterForm = () => {
             fontWeight: 500,
             transition: "color 0.15s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-text-primary)")}
+          onMouseEnter={(e) => {
+            hover()
+            e.currentTarget.style.color = "var(--color-text-primary)"
+          }}
           onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
         >
           Sign in

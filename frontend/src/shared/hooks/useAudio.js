@@ -150,7 +150,35 @@ const useAudio = () => {
     }
   }, [getCtx])
 
-  return { click, tick, focus, whoosh }
+  /**
+   * Hover — ultra-subtle low-volume pip. Used when mousing over interactive elements.
+   */
+  const hover = useCallback(() => {
+    try {
+      const ctx = getCtx()
+      const now = ctx.currentTime
+
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.type = "sine"
+      osc.frequency.setValueAtTime(300, now)
+      osc.frequency.exponentialRampToValueAtTime(150, now + 0.03)
+
+      gain.gain.setValueAtTime(0.015, now)
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03)
+
+      osc.start(now)
+      osc.stop(now + 0.03)
+    } catch {
+      // Silently fail
+    }
+  }, [getCtx])
+
+  return { click, tick, focus, whoosh, hover }
 }
 
 export default useAudio

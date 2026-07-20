@@ -15,7 +15,7 @@ const AuthLayout = ({ children, leftPanelRef, rightPanelRef, ambientRef }) => {
         minHeight: "100dvh",
         width: "100%",
         display: "grid",
-        gridTemplateColumns: "1fr",
+        gridTemplateColumns: "2fr",
         background: "var(--color-bg)",
         position: "relative",
         overflow: "hidden",
@@ -50,48 +50,6 @@ const AuthLayout = ({ children, leftPanelRef, rightPanelRef, ambientRef }) => {
         />
 
         {/* Glowing orbs — animated by GSAP in Register.jsx */}
-        <div ref={ambientRef} style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-          <div
-            className="orb orb--1"
-            style={{
-              position: "absolute",
-              width: 420,
-              height: 420,
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)",
-              top: "8%",
-              left: "50%",
-              transform: "translateX(-50%)",
-              pointerEvents: "none",
-            }}
-          />
-          <div
-            className="orb orb--2"
-            style={{
-              position: "absolute",
-              width: 280,
-              height: 280,
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)",
-              bottom: "22%",
-              left: "18%",
-              pointerEvents: "none",
-            }}
-          />
-          <div
-            className="orb orb--3"
-            style={{
-              position: "absolute",
-              width: 200,
-              height: 200,
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 70%)",
-              top: "52%",
-              right: "12%",
-              pointerEvents: "none",
-            }}
-          />
-        </div>
 
         {/* Large wordmark + content */}
         <div
@@ -152,58 +110,6 @@ const AuthLayout = ({ children, leftPanelRef, rightPanelRef, ambientRef }) => {
           >
             Premium C2C Marketplace
           </p>
-
-          {/* Stat badges */}
-          <div
-            className="auth-layout__stats"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.625rem",
-              marginTop: "1.75rem",
-            }}
-          >
-            {[
-              { value: "50K+", label: "Active Listings" },
-              { value: "12K+", label: "Happy Buyers" },
-              { value: "4.9★", label: "Avg. Rating" },
-            ].map(({ value, label }) => (
-              <div
-                key={label}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                  padding: "0.6rem 1.125rem",
-                  borderRadius: "var(--radius-lg)",
-                  background: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.95rem",
-                    fontWeight: 600,
-                    color: "var(--color-text-primary)",
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  {value}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "0.7rem",
-                    color: "var(--color-text-muted)",
-                    letterSpacing: "0.04em",
-                  }}
-                >
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Bottom vignette */}

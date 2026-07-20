@@ -1,11 +1,12 @@
 import { useRef, useState, useEffect } from "react"
 import { gsap } from "gsap"
-
 import AuthLayout from "../components/AuthLayout"
 import RegisterHeader from "../components/RegisterHeader"
 import RegisterForm from "../components/RegisterForm"
 import LoadingScreen from "@/shared/components/loading/LoadingScreen"
 import useAudio from "@/shared/hooks/useAudio"
+import { useAuth } from "../hooks/useAuth"
+import {useNavigate} from 'react-router'
 
 /**
  * Register — Page
@@ -21,6 +22,10 @@ import useAudio from "@/shared/hooks/useAudio"
  * while guaranteeing content is never permanently hidden.
  */
 const Register = () => {
+
+  const {handleRegister} = useAuth()
+  const navigate = useNavigate()
+
   const [loadingVisible, setLoadingVisible] = useState(true)
   const [loadingMounted, setLoadingMounted] = useState(true)
 
@@ -88,6 +93,18 @@ const Register = () => {
 
     return () => ctx.revert()
   }, [loadingMounted])
+
+  const handleSubmit = async(e) => {
+    e.preventDefault()
+    await handleRegister({
+        email : FormData.email,
+        contact : FormData.contact,
+        password : FormData.password,
+        isSeller : FormData.isSeller,
+        fullname : FormData.fullname,
+    })
+    navigate("/")
+  }
 
   return (
     <>
