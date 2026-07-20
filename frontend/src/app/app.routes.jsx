@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet, useLocation } from 'react-router'
 import Register from './features/auth/pages/Register'
+import Login from './features/auth/pages/Login'
 import useLenis from '@/shared/hooks/useLenis'
 
 const NO_SCROLL_ROUTES = ['/register', '/login', '/forgot-password']
@@ -26,6 +27,10 @@ export const routes = createBrowserRouter([
       {
         path: "register",
         element: <Register />
+      },
+      {
+        path: "login",
+        element: <Login />
       }
     ]
   }

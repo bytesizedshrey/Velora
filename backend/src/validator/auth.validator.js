@@ -10,7 +10,6 @@ function validateRequest(req,res,next){
     next()
 }
 
-
 export const validationRegisterUser = [
     body("email")
     .isEmail().withMessage("Invalid email format"),
@@ -29,6 +28,16 @@ export const validationRegisterUser = [
     body("isSeller")
         .isBoolean().withMessage("isSeller must be a boolean value"), 
 
+
+    validateRequest
+]
+
+export const validationLoginUser = [
+    body("email")
+    .isEmail().withMessage("Invalid email format"),
+
+    body("password")
+    .notEmpty().withMessage('Password is required'),
 
     validateRequest
 ]
