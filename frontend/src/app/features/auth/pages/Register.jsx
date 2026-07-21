@@ -3,8 +3,8 @@ import { gsap } from "gsap"
 import AuthLayout from "../components/AuthLayout"
 import RegisterHeader from "../components/RegisterHeader"
 import RegisterForm from "../components/RegisterForm"
-import LoadingScreen from "@/shared/components/loading/LoadingScreen"
-import useAudio from "@/shared/hooks/useAudio"
+import LoadingScreen from "../../../../shared/components/loading/LoadingScreen"
+import useAudio from "../../../../shared/hooks/useAudio"
 import { useAuth } from "../hooks/useAuth"
 import {useNavigate} from 'react-router'
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
-import LiquidMetalButton from "@/components/ui/liquid-metal"
-import useAudio from "@/shared/hooks/useAudio"
+import LiquidMetalButton from "../../../../components/ui/liquid-metal"
+import useAudio from "../../../../shared/hooks/useAudio"
 import { loginUser, clearError } from "../state/auth.slice"
 
 /**

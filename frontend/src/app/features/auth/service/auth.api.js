@@ -2,7 +2,7 @@ import axios from "axios";
 
 //reusable, pre-configured API client that makes your code cleaner, more maintainable, and easier to scale.
 const authApiInstance = axios.create({
-    baseURL : "http://localhost:3000/api/auth",
+    baseURL : "/api/auth",
     withCredentials : true
 })
 

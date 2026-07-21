@@ -1,7 +1,7 @@
 "use client";;
 import React, { memo, forwardRef } from "react";
 import { LiquidMetal as LiquidMetalShader } from "@paper-design/shaders-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 export const LiquidMetal = memo(function LiquidMetal({
     colorBack = "#aaaaac",

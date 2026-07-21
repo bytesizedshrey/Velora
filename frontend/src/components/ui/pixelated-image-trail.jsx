@@ -1,6 +1,6 @@
 "use client";;
 import { useEffect, useMemo, useRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 const DEFAULT_CONFIG = {
   imageLifespan: 1500,

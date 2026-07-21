@@ -2,8 +2,8 @@ import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import SellerCheckbox from "./SellerCheckbox"
-import LiquidMetalButton from "@/components/ui/liquid-metal"
-import useAudio from "@/shared/hooks/useAudio"
+import LiquidMetalButton from "../../../../components/ui/liquid-metal"
+import useAudio from "../../../../shared/hooks/useAudio"
 import { registerUser, clearError } from "../state/auth.slice"
 
 /**

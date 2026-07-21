@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
-import { PixelatedImageTrail } from "@/components/ui/pixelated-image-trail"
+import { PixelatedImageTrail } from "../../../components/ui/pixelated-image-trail"
 
 // Abstract dark-luxury Unsplash images used as the trail effect
 const TRAIL_IMAGES = [

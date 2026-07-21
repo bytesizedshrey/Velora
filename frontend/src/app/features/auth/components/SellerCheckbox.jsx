@@ -1,4 +1,4 @@
-import useAudio from "@/shared/hooks/useAudio"
+import useAudio from "../../../../shared/hooks/useAudio"
 
 /**
  * SellerCheckbox

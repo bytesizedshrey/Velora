@@ -4,8 +4,8 @@ import { gsap } from "gsap"
 import AuthLayout from "../components/AuthLayout"
 import LoginHeader from "../components/LoginHeader"
 import LoginForm from "../components/LoginForm"
-import LoadingScreen from "@/shared/components/loading/LoadingScreen"
-import useAudio from "@/shared/hooks/useAudio"
+import LoadingScreen from "../../../../shared/components/loading/LoadingScreen"
+import useAudio from "../../../../shared/hooks/useAudio"
 
 /**
  * Login — Page
