@@ -5,7 +5,7 @@
  */
 const RegisterHeader = () => {
   return (
-    <div style={{ marginBottom: "2.5rem" }}>
+    <div style={{ marginBottom: "1rem" }}>
 
       {/* Eyebrow tag */}
       <div
@@ -14,7 +14,7 @@ const RegisterHeader = () => {
           display: "inline-flex",
           alignItems: "center",
           gap: "0.5rem",
-          marginBottom: "1.25rem",
+          marginBottom: "0.5rem",
         }}
       >
         <span
@@ -30,7 +30,7 @@ const RegisterHeader = () => {
         <span
           style={{
             fontFamily: "var(--font-body)",
-            fontSize: "0.68rem",
+            fontSize: "0.65rem",
             fontWeight: 500,
             letterSpacing: "0.18em",
             textTransform: "uppercase",
@@ -41,16 +41,16 @@ const RegisterHeader = () => {
         </span>
       </div>
 
-      {/* Main heading — words split for GSAP stagger */}
+      {/* Main heading */}
       <h1
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "clamp(2rem, 4vw, 2.75rem)",
+          fontSize: "clamp(1.75rem, 3.2vw, 2.25rem)",
           fontWeight: 700,
           letterSpacing: "-0.03em",
           lineHeight: 1.1,
           color: "var(--color-text-primary)",
-          marginBottom: "0.875rem",
+          marginBottom: "0.35rem",
           overflow: "hidden",
         }}
       >
@@ -67,15 +67,14 @@ const RegisterHeader = () => {
         className="register-header-subtitle"
         style={{
           fontFamily: "var(--font-body)",
-          fontSize: "0.875rem",
+          fontSize: "0.8rem",
           fontWeight: 400,
           color: "var(--color-text-muted)",
-          lineHeight: 1.7,
-          maxWidth: "30ch",
+          lineHeight: 1.5,
+          maxWidth: "34ch",
         }}
       >
-        A premium C2C marketplace. Buy anything,
-        sell everything — beautifully.
+        A premium C2C marketplace. Buy & sell beautifully.
       </p>
     </div>
   )

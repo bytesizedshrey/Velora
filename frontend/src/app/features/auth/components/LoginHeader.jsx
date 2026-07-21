@@ -4,7 +4,7 @@
  */
 const LoginHeader = () => {
   return (
-    <div style={{ marginBottom: "2.5rem" }}>
+    <div style={{ marginBottom: "1rem" }}>
 
       {/* Eyebrow tag */}
       <div
@@ -13,7 +13,7 @@ const LoginHeader = () => {
           display: "inline-flex",
           alignItems: "center",
           gap: "0.5rem",
-          marginBottom: "1.25rem",
+          marginBottom: "0.5rem",
         }}
       >
         <span
@@ -29,7 +29,7 @@ const LoginHeader = () => {
         <span
           style={{
             fontFamily: "var(--font-body)",
-            fontSize: "0.68rem",
+            fontSize: "0.65rem",
             fontWeight: 500,
             letterSpacing: "0.18em",
             textTransform: "uppercase",
@@ -44,12 +44,12 @@ const LoginHeader = () => {
       <h1
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "clamp(2rem, 4vw, 2.75rem)",
+          fontSize: "clamp(1.75rem, 3.2vw, 2.25rem)",
           fontWeight: 700,
           letterSpacing: "-0.03em",
           lineHeight: 1.1,
           color: "var(--color-text-primary)",
-          marginBottom: "0.875rem",
+          marginBottom: "0.35rem",
           overflow: "hidden",
         }}
       >
@@ -66,14 +66,14 @@ const LoginHeader = () => {
         className="login-header-subtitle"
         style={{
           fontFamily: "var(--font-body)",
-          fontSize: "0.875rem",
+          fontSize: "0.8rem",
           fontWeight: 400,
           color: "var(--color-text-muted)",
-          lineHeight: 1.7,
-          maxWidth: "32ch",
+          lineHeight: 1.5,
+          maxWidth: "34ch",
         }}
       >
-        Enter your credentials to access your Velora account and workspace.
+        Enter your credentials to access your Velora account.
       </p>
     </div>
   )
