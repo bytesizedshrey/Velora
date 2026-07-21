@@ -3,6 +3,7 @@ import { validationRegisterUser, validationLoginUser } from "../validator/auth.v
 import { register, login, getMe, logout, googleCallback } from "../controllers/auth.contoller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import passport from "passport";
+import { config } from "../config/config.js";
 
 const router = Router()
 
@@ -12,6 +13,9 @@ router.get('/me', protectRoute, getMe)
 router.post('/logout', logout)
 
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }))
-router.get("/google/callback", passport.authenticate("google", { session: false }), googleCallback)
+router.get("/google/callback", passport.authenticate("google",
+     { session: false,
+       failureRedirect : config.NODE_ENV == "development" ? "http://localhost:5173/login" : "/login"
+      }), googleCallback)
 
 export default router
