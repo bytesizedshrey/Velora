@@ -314,7 +314,7 @@ const RegisterForm = () => {
         <LiquidMetalButton
           type="submit"
           size="lg"
-          borderWidth={3}
+          borderWidth={3.5}
           disabled={loading}
           className="justify-center"
           metalConfig={{

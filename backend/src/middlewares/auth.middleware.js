@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import userModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 
-export const protectRoute = async (req, res, next) => {
+export const authenticateSeller = async (req, res, next) => {
     try {
         const token = req.cookies.token;
 
@@ -19,6 +19,7 @@ export const protectRoute = async (req, res, next) => {
         }
 
         req.user = user;
+        req.seller = user;
         next();
     } catch (error) {
         console.error("Error in protectRoute middleware:", error.message);
