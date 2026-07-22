@@ -309,14 +309,14 @@ const RegisterForm = () => {
       {/* Submit Button */}
       <div
         className="form-field"
-        style={{ paddingTop: "0.25rem" }}
+        style={{ paddingTop: "0.25rem", display: "flex", justifyContent: "center" }}
       >
         <LiquidMetalButton
           type="submit"
-          size="md"
+          size="lg"
           borderWidth={3}
           disabled={loading}
-          className="w-full justify-center"
+          className="justify-center"
           metalConfig={{
             colorBack: "#1a1a1a",
             colorTint: "#d4d4d4",
@@ -324,7 +324,7 @@ const RegisterForm = () => {
             distortion: loading ? 3 : 2,
           }}
           onMouseEnter={hover}
-          style={{ width: "100%", opacity: loading ? 0.7 : 1 }}
+          style={{ width: "70%", opacity: loading ? 0.7 : 1 }}
         >
           {loading ? "Creating Account..." : "Create Account"}
         </LiquidMetalButton>
