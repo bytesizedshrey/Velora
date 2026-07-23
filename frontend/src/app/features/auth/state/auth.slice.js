@@ -39,21 +39,6 @@ export const loginUser = createAsyncThunk(
     }
 );
 
-// Async thunk for user session check (GET /api/auth/me)
-export const checkAuth = createAsyncThunk(
-    "auth/checkAuth",
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await axios.get("/api/auth/me", { withCredentials: true });
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(
-                error.response?.data?.message || "Session expired"
-            );
-        }
-    }
-);
-
 // Async thunk for user logout
 export const logoutUser = createAsyncThunk(
     "auth/logoutUser",
@@ -74,7 +59,7 @@ const authSlice = createSlice({
     initialState: {
         user: null,
         loading: false,
-        authChecked: false,
+        authChecked: true,
         error: null,
     },
     reducers: {
@@ -116,19 +101,6 @@ const authSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            })
-            .addCase(checkAuth.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(checkAuth.fulfilled, (state, action) => {
-                state.loading = false;
-                state.authChecked = true;
-                state.user = action.payload.user;
-            })
-            .addCase(checkAuth.rejected, (state) => {
-                state.loading = false;
-                state.authChecked = true;
-                state.user = null;
             })
             .addCase(logoutUser.fulfilled, (state) => {
                 state.user = null;

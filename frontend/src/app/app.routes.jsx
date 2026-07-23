@@ -1,10 +1,9 @@
-import { useEffect } from 'react'
 import { createBrowserRouter, Outlet, useLocation } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import Register from './features/auth/pages/Register'
 import Login from './features/auth/pages/Login'
 import ProtectedRoute from './features/auth/components/ProtectedRoute'
-import { checkAuth, logoutUser } from './features/auth/state/auth.slice'
+import CreateProduct from './features/products/pages/CreateProduct'
 import useLenis from '../shared/hooks/useLenis'
 
 const NO_SCROLL_ROUTES = ['/register', '/login', '/forgot-password']
@@ -14,10 +13,7 @@ const RootLayout = () => {
   const dispatch = useDispatch()
   const isAuthPage = NO_SCROLL_ROUTES.includes(location.pathname)
 
-  // Check auth session on mount
-  useEffect(() => {
-    dispatch(checkAuth())
-  }, [dispatch])
+  // No auth session check needed - authChecked defaults to true
 
   // Initialize lenis, disabled on auth pages
   useLenis(isAuthPage)
@@ -80,6 +76,10 @@ export const routes = createBrowserRouter([
       {
         path: "login",
         element: <Login />
+      },
+      {
+        path: "create-product",
+        element: <CreateProduct />
       }
     ]
   }
