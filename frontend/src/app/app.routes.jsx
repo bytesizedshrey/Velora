@@ -5,6 +5,7 @@ import Login from './features/auth/pages/Login'
 import ProtectedRoute from './features/auth/components/ProtectedRoute'
 import CreateProduct from './features/products/pages/CreateProduct'
 import useLenis from '../shared/hooks/useLenis'
+import Dashboard from './features/products/pages/Dashboard'
 
 const NO_SCROLL_ROUTES = ['/register', '/login', '/forgot-password']
 
@@ -80,6 +81,23 @@ export const routes = createBrowserRouter([
       {
         path: "create-product",
         element: <CreateProduct />
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />
+      },
+      {
+        path : "seller",
+        children:[
+          {
+            path : "create-product",
+            element : <CreateProduct/>
+          },
+          {
+            path : "dashboard",
+            element : <Dashboard/>
+          }
+        ]
       }
     ]
   }

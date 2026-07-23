@@ -21,4 +21,5 @@ router.post('/', authenticateSeller, upload.array('images', 7), createProductVal
 
 router.get("/seller",authenticateSeller,getSellerProducts)
 
+
 export default router 

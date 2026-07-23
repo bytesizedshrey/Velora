@@ -30,7 +30,19 @@ export const useAuth = () => {
             dispatch(setError(err.response?.data?.message || err.message))
             dispatch(setLoading(false))
         }
+        async function handleGetMe() {
+            try {
+                dispatch(setLoading(true))
+                const data = await getMe()
+                dispatch(setUser(data.user))
+                dispatch(setLoading(false))
+            } catch (error) {
+                console.log(err)
+            } finally {
+                dispatch(setLoading(false))
+            }
+        }
     }
 
-    return {handleRegister,handleLogin}
+    return {handleRegister,handleLogin,handleGetMe}
 }

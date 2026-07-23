@@ -104,3 +104,18 @@ export const googleCallback = async(req,res)=>{
 
     res.redirect("http://localhost:5173/dashboard")
 }
+
+export const getMe = async (req,res) =>{
+    const user = req.user
+    res.status(200).json({
+        message : "User Fetched Sucessfully",
+        success : true,
+        user : {
+            id : user._id,
+            email : user.email,
+            contact : user.contact,
+            fullname : user.fullname,
+            role : user.role
+        }
+    })
+}
