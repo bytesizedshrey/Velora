@@ -17,6 +17,6 @@ router.get("/google/callback", passport.authenticate("google",
        failureRedirect : config.NODE_ENV == "development" ? "http://localhost:5173/login" : "/login"
       }), googleCallback)
 
-router.getMe("/me",authenticateUser,getMe)
+router.get("/me", authenticateUser, getMe)
 
 export default router

@@ -653,6 +653,7 @@ const Dashboard = () => {
               return (
                 <div
                   key={product._id}
+                  onClick={() => navigate(`/seller/product/${product._id}`)}
                   style={{
                     borderRadius: 14,
                     background: '#0e0e0e',
@@ -664,6 +665,7 @@ const Dashboard = () => {
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
+                    cursor: 'pointer',
                     transition: 'transform 0.2s, box-shadow 0.2s',
                   }}
                   onMouseEnter={e => {
@@ -843,9 +845,11 @@ const Dashboard = () => {
                   return (
                     <tr
                       key={product._id}
+                      onClick={() => navigate(`/seller/product/${product._id}`)}
                       style={{
                         borderBottom: idx === filteredProducts.length - 1 ? 'none' : '1px solid #101010',
                         transition: 'background 0.15s',
+                        cursor: 'pointer',
                       }}
                       onMouseEnter={e => e.currentTarget.style.background = '#090909'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}

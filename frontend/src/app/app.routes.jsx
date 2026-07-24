@@ -1,61 +1,48 @@
-import { createBrowserRouter, Outlet, useLocation } from 'react-router'
-import { useDispatch, useSelector } from 'react-redux'
-import Register from './features/auth/pages/Register'
-import Login from './features/auth/pages/Login'
-import ProtectedRoute from './features/auth/components/ProtectedRoute'
-import CreateProduct from './features/products/pages/CreateProduct'
-import useLenis from '../shared/hooks/useLenis'
-import Dashboard from './features/products/pages/Dashboard'
+import { createBrowserRouter, Outlet, useLocation } from "react-router";
 
-const NO_SCROLL_ROUTES = ['/register', '/login', '/forgot-password']
+import Register from "./features/auth/pages/Register";
+import Login from "./features/auth/pages/Login";
+import Home from "./features/products/pages/Home";
+import CreateProduct from "./features/products/pages/CreateProduct";
+import Dashboard from "./features/products/pages/Dashboard";
+import ProductDetail from "./features/products/pages/ProductDetail";
+
+import Protected from "./features/auth/components/Protected";
+import useLenis from "../shared/hooks/useLenis";
+import { NotchNavbar } from "../components/ui/notch-navbar";
+import SellerProductDetails from "./features/products/pages/SellerProductDetails";
+
+const NO_SCROLL_ROUTES = ["/register", "/login", "/forgot-password"];
 
 const RootLayout = () => {
-  const location = useLocation()
-  const dispatch = useDispatch()
-  const isAuthPage = NO_SCROLL_ROUTES.includes(location.pathname)
+  const { pathname } = useLocation();
 
-  // No auth session check needed - authChecked defaults to true
+  const isAuthPage = NO_SCROLL_ROUTES.some((route) =>
+    pathname.startsWith(route)
+  );
 
-  // Initialize lenis, disabled on auth pages
-  useLenis(isAuthPage)
-
-  return <Outlet />
-}
-
-const HomePage = () => {
-  const { user } = useSelector((state) => state.auth)
+  useLenis(isAuthPage);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#070707",
-        color: "#fff",
-        fontFamily: "var(--font-body)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "1.5rem",
-        padding: "2rem",
-      }}
-    >
-      <h1
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "2.5rem",
-          fontWeight: 700,
-          letterSpacing: "-0.03em",
-        }}
+    <>
+      {!isAuthPage && <NotchNavbar />}
+
+      <main
+        className={`min-h-screen bg-[#040404] ${
+          !isAuthPage ? "pt-28" : ""
+        }`}
       >
-        Welcome to Velora, {user?.fullname || "User"}!
-      </h1>
-      <p style={{ color: "var(--color-text-muted)", fontSize: "0.95rem" }}>
-        Logged in as: <strong style={{ color: "#fff" }}>{user?.email}</strong> ({user?.role})
-      </p>
-    </div>
-  )
-}
+        <Outlet />
+      </main>
+    </>
+  );
+};
+
+const SellerLayout = () => (
+  <Protected role="seller">
+    <Outlet />
+  </Protected>
+);
 
 export const routes = createBrowserRouter([
   {
@@ -63,42 +50,39 @@ export const routes = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        path: "/",
-        element: (
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        )
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "product/:productId",
+        element: <ProductDetail />,
       },
       {
         path: "register",
-        element: <Register />
+        element: <Register />,
       },
       {
         path: "login",
-        element: <Login />
+        element: <Login />,
       },
       {
-        path: "create-product",
-        element: <CreateProduct />
-      },
-      {
-        path: "dashboard",
-        element: <Dashboard />
-      },
-      {
-        path : "seller",
-        children:[
+        path: "seller",
+        element: <SellerLayout />,
+        children: [
           {
-            path : "create-product",
-            element : <CreateProduct/>
+            path: "create-product",
+            element: <CreateProduct />,
           },
           {
-            path : "dashboard",
-            element : <Dashboard/>
-          }
-        ]
-      }
-    ]
-  }
-])
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "product/:productId",
+            element: <SellerProductDetails />,
+          },
+        ],
+      },
+    ],
+  },
+]);

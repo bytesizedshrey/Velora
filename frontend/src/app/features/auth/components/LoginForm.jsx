@@ -216,11 +216,17 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     click()
-
-    const resultAction = await dispatch(loginUser(formData))
-    if (loginUser.fulfilled.match(resultAction)) {
-      navigate("/")
+    try {
+      const resultAction = await dispatch(loginUser(formData))
+      if (loginUser.fulfilled.match(resultAction)) {
+        navigate("/")
+      } else if(user.role == "seller"){
+        navigate("/seller/dashboard")
+      }
+    } catch (error) {
+      console.error("Login Failed",error)
     }
+
   }
 
   return (

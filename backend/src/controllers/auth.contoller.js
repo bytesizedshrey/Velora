@@ -59,63 +59,77 @@ export const register = async (req, res) => {
     }
 }
 
-export const login = async (req,res) => {
-    const {email,password} = req.body
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body
 
-    const user = await userModel.findOne({email})
+        const user = await userModel.findOne({ email })
 
-    if(!user) {
-        return res.status(400).json({message : "Invalid email or password"})
-    }
-
-    const isMatch = await user.comparePassword(password)
-
-    if(!isMatch){
-        return res.status(400).json({message : "Invalid email or password"})
-    }
-
-    await sendTokenResponse(user, res, "user logged successfully")
-}
-
-export const googleCallback = async(req,res)=>{
-   const {id,displayName,emails,photos} = req.user
-   const email = emails[0].value
-   const profilePic = photos[0].value
-
-   let user = await userModel.findOne({
-    email
-   })
-
-   if(!user){
-    user = await  userModel.create({
-        email,
-        googleId: id,
-        fullname: displayName
-    })
-   }
-
-   const token = jwt.sign({
-    id : user._id,
-   },config.JWT_SECRET,{
-    expiresIn : "7d"
-   })
-
-    res.cookie("token", token)
-
-    res.redirect("http://localhost:5173/dashboard")
-}
-
-export const getMe = async (req,res) =>{
-    const user = req.user
-    res.status(200).json({
-        message : "User Fetched Sucessfully",
-        success : true,
-        user : {
-            id : user._id,
-            email : user.email,
-            contact : user.contact,
-            fullname : user.fullname,
-            role : user.role
+        if (!user) {
+            return res.status(400).json({ message: "Invalid email or password", success: false })
         }
-    })
+
+        const isMatch = await user.comparePassword(password)
+
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid email or password", success: false })
+        }
+
+        return await sendTokenResponse(user, res, "user logged successfully")
+    } catch (error) {
+        console.error("Error in login controller:", error);
+        return res.status(500).json({ message: "Server error", success: false });
+    }
+}
+
+export const googleCallback = async (req, res) => {
+    try {
+        const { id, displayName, emails } = req.user
+        const email = emails[0].value
+
+        let user = await userModel.findOne({ email })
+
+        if (!user) {
+            user = await userModel.create({
+                email,
+                googleId: id,
+                fullname: displayName
+            })
+        }
+
+        const token = jwt.sign({
+            id: user._id,
+        }, config.JWT_SECRET, {
+            expiresIn: "7d"
+        })
+
+        res.cookie("token", token)
+        res.redirect("http://localhost:5173/dashboard")
+    } catch (error) {
+        console.error("Error in googleCallback:", error);
+        res.redirect("http://localhost:5173/login")
+    }
+}
+
+export const getMe = async (req, res) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return res.status(401).json({ message: "Unauthorized", success: false });
+        }
+        res.status(200).json({
+            message: "User Fetched Successfully",
+            success: true,
+            user: {
+                id: user._id,
+                email: user.email,
+                contact: user.contact,
+                fullname: user.fullname,
+                role: user.role
+            }
+        })
+    } catch (error) {
+        console.error("Error in getMe controller:", error);
+        return res.status(500).json({ message: "Server error", success: false });
+    }
 }
