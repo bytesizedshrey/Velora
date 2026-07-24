@@ -24,6 +24,7 @@ const Home = () => {
 
   const {
     searchQuery,
+    setSearchQuery,
     sortBy,
     setSortBy,
     viewMode,
@@ -79,7 +80,7 @@ const Home = () => {
         minHeight: '100vh',
         background: '#040404',
         color: '#ffffff',
-        fontFamily: 'Inter, system-ui',
+        fontFamily: "'Duality', 'Orbitron', 'Space Grotesk', system-ui",
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -96,7 +97,11 @@ const Home = () => {
           gap: 28,
         }}
       >
-        <HeroSection totalProductsCount={products.length} />
+        <HeroSection
+          totalProductsCount={products.length}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
         <MarketplaceToolbar
           filteredCount={filteredProducts.length}

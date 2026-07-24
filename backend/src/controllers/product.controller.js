@@ -133,3 +133,111 @@ export async function getProductDetails(req,res) {
         product
     })
 }
+
+export async function addProductVarient(req, res) {
+  try {
+    const productId = req.params.productId
+    const seller = req.seller || req.user
+
+    if (!seller) {
+      return res.status(401).json({ message: "Seller not authenticated", success: false })
+    }
+
+    const product = await productModel.findOne({
+      _id: productId,
+      seller: seller._id
+    })
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product Not Found",
+        success: false
+      })
+    }
+
+    const files = req.files || []
+    let images = []
+
+    if (files.length > 0) {
+      images = await Promise.all(files.map(async (file) => {
+        try {
+          const uploadResult = await uploadFile({
+            buffer: file.buffer,
+            fileName: file.originalname
+          })
+          return {
+            url: uploadResult.url
+          }
+        } catch (err) {
+          console.error("Variant image upload failed, using fallback:", err.message)
+          return {
+            url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
+          }
+        }
+      }))
+    } else {
+      images = [{
+        url: product.images?.[0]?.url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
+      }]
+    }
+
+    const priceAmount = Number(req.body.priceAmount || req.body.price || product.price?.amount || 0)
+    const priceCurrency = req.body.priceCurrency || product.price?.currency || "INR"
+    const stock = Number(req.body.stock || 0)
+
+    let attribute = {}
+    if (req.body.attribute) {
+      try {
+        attribute = typeof req.body.attribute === 'string' ? JSON.parse(req.body.attribute) : req.body.attribute
+      } catch (e) {
+        console.error("Failed to parse variant attributes:", e)
+      }
+    }
+
+    const newVariant = {
+      images,
+      stock,
+      attribute,
+      price: {
+        amount: priceAmount,
+        currency: priceCurrency
+      }
+    }
+
+    product.varients.push({
+        images,
+        price: {
+            amount: price || product.price.amount,
+            currency : req.body.priceCurrency || product.price.currency
+        },
+        stock,
+        attributes
+    })
+
+    await product.save()
+
+    return res.status(200).json({
+        message : "product varient added",
+        success : true,
+        product
+    })
+
+    if (!product.varients) {
+      product.varients = []
+    }
+    product.varients.push(newVariant)
+
+    await product.save()
+
+    return res.status(201).json({
+      message: "Variant added successfully",
+      success: true,
+      product
+    })
+  } catch (error) {
+    console.error("Error in addProductVarient controller:", error)
+    return res.status(500).json({ message: "Internal server error", success: false, error: error.message })
+  }
+
+
+}

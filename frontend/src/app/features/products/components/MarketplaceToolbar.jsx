@@ -58,7 +58,7 @@ const MarketplaceToolbar = ({
               border: 'none',
               color: 'rgba(255,255,255,0.75)',
               fontSize: '0.78rem',
-              fontFamily: 'Inter, system-ui',
+              fontFamily: "'Duality', 'Orbitron', 'Space Grotesk', system-ui",
               cursor: 'pointer',
               outline: 'none',
               appearance: 'none',

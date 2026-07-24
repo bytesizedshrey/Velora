@@ -100,7 +100,7 @@ export function NotchNavbar({ className, ...props }) {
                   <div className="w-7 h-7 rounded-lg bg-[#141414] border-t border-[#242424] border-l border-[#242424] border-r border-[#080808] border-b border-[#080808] shadow-md shadow-black/50 grid place-items-center text-xs font-bold text-white group-hover:scale-105 transition-transform">
                     V
                   </div>
-                  <span className="font-bold text-sm tracking-tight text-white font-sans">
+                  <span className="font-bold text-sm tracking-wide text-white font-college">
                     Velora
                   </span>
                 </Link>

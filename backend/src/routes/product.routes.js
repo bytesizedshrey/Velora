@@ -6,6 +6,7 @@ import {
     getSellerProducts,
     getProductById,
     getProductDetails,
+    addProductVarient,
 } from "../controllers/product.controller.js";
 import multer from 'multer'
 import { createProductValidator } from "../validator/product.validator.js";
@@ -29,5 +30,7 @@ router.get("/",getAllProducts)
 router.get("/:id", getProductById)
 
 router.get("/detail/:id",getProductDetails)
+
+router.post("/:productId/varients",authenticateSeller,upload.array('images',7),addProductVarient)
 
 export default router 

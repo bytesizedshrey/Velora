@@ -1,26 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bungee&family=Graduate&family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
-   FONTS
-═══════════════════════════════════════════ */
+   COLLEGED FONT DEFINITION (Headings)
+   ═══════════════════════════════════════════ */
+@font-face {
+  font-family: 'Colleged';
+  src: local('Colleged'), local('Bungee'), local('Graduate'), url('https://fonts.gstatic.com/s/bungee/v18/N0bU2SZBIuF2iqAC1B1s.woff2') format('woff2');
+  font-weight: 400 900;
+  font-display: swap;
+}
+
+/* ═══════════════════════════════════════════
+   DUALITY FONT DEFINITION (Body & Subtext)
+   ═══════════════════════════════════════════ */
+@font-face {
+  font-family: 'Duality';
+  src: local('Duality'), local('Orbitron'), local('Rajdhani'), local('Space Grotesk'), url('https://fonts.gstatic.com/s/orbitron/v31/yJ807zhNvlWf12ql3XMR.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+}
 
 /* Geist via CDN */
 @font-face {
   font-family: 'Geist';
   src: url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
   font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Geist';
-  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Geist';
-  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/Geist-SemiBold.woff2') format('woff2');
-  font-weight: 600;
   font-display: swap;
 }
 @font-face {
@@ -32,7 +37,7 @@
 
 /* ═══════════════════════════════════════════
    DESIGN TOKENS
-═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 :root {
   /* Colors */
   --color-bg:          #050505;
@@ -50,8 +55,10 @@
   --color-accent-dim:  rgba(212, 212, 212, 0.45);
 
   /* Typography */
-  --font-display: 'Geist', system-ui, sans-serif;
-  --font-body:    'Inter', system-ui, sans-serif;
+  --font-colleged: 'Colleged', 'Bungee', 'Graduate', 'Alfa Slab One', sans-serif;
+  --font-subtext: 'Duality', 'Orbitron', 'Rajdhani', 'Space Grotesk', system-ui, sans-serif;
+  --font-display: 'Colleged', 'Bungee', 'Graduate', 'Alfa Slab One', system-ui, sans-serif;
+  --font-body:    'Duality', 'Orbitron', 'Rajdhani', 'Space Grotesk', system-ui, sans-serif;
 
   /* Spacing */
   --space-section: 5rem;
@@ -74,7 +81,7 @@
 
 /* ═══════════════════════════════════════════
    RESET & BASE
-═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -87,19 +94,30 @@ html {
   text-rendering: optimizeLegibility;
 }
 
-body {
+body, input, textarea, select, button, p, span, a, label, td, th {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
-  font-family: var(--font-body);
+  font-family: var(--font-subtext) !important;
+  letter-spacing: 0.02em;
+}
+
+body {
   font-size: 16px;
   line-height: 1.6;
   min-height: 100dvh;
   overflow-x: hidden;
 }
 
+/* Headings — Colleged Font */
+h1, h2, h3, h4, h5, h6, .font-colleged, .font-college, .font-display {
+  font-family: var(--font-colleged) !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 /* ═══════════════════════════════════════════
    SCROLLBAR
-═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -116,7 +134,7 @@ body {
 
 /* ═══════════════════════════════════════════
    SELECTION
-═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 ::selection {
   background: var(--color-accent-glow);
   color: var(--color-text-primary);
@@ -124,7 +142,7 @@ body {
 
 /* ═══════════════════════════════════════════
    TAILWIND THEME EXTENSION (v4 syntax)
-═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 @theme {
   --color-velora-bg: #050505;
   --color-velora-accent: #d4d4d4;
@@ -132,6 +150,7 @@ body {
   --color-velora-surface: rgba(255, 255, 255, 0.04);
   --color-velora-border: rgba(255, 255, 255, 0.08);
 
-  --font-family-display: 'Geist', system-ui, sans-serif;
-  --font-family-body:    'Inter', system-ui, sans-serif;
+  --font-family-display: 'Colleged', 'Bungee', 'Graduate', sans-serif;
+  --font-family-subtext: 'Duality', 'Orbitron', 'Rajdhani', sans-serif;
+  --font-family-body:    'Duality', 'Orbitron', 'Rajdhani', sans-serif;
 }
