@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useSelector } from 'react-redux'
 import { gsap } from 'gsap'
@@ -6,6 +6,7 @@ import { useProduct } from '../hook/useProduct'
 import { DEFAULT_PRODUCT_IMAGE } from '../utils/constants'
 import ProductVariantCarousel from '../components/ProductVariantCarousel'
 import AddVariantModal from '../components/AddVariantModal'
+import VariantSelector from '../components/VariantSelector'
 
 const NOTCH_H = 64
 const TOP_PAD = NOTCH_H + 48  // 112px clearance from notch
@@ -29,6 +30,8 @@ export default function ProductDetail({ productData = null, loadingState = null,
   const [activeImg, setActiveImg] = useState(0)
   const [qty, setQty] = useState(1)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedVariantIdx, setSelectedVariantIdx] = useState(0)
+  const [selectedAttributes, setSelectedAttributes] = useState({})
   const pageRef = useRef(null)
 
   useEffect(() => {
@@ -37,6 +40,25 @@ export default function ProductDetail({ productData = null, loadingState = null,
       if (loadingState !== null) setLoading(loadingState)
     }
   }, [productData, loadingState])
+
+  useEffect(() => {
+    if (product?.varients && product.varients.length > 0) {
+      const firstVar = product.varients[selectedVariantIdx] || product.varients[0]
+      const attrObj = firstVar?.attribute
+        ? (firstVar.attribute instanceof Map
+            ? Object.fromEntries(firstVar.attribute)
+            : typeof firstVar.attribute === 'object'
+            ? firstVar.attribute
+            : {})
+        : {}
+      setSelectedAttributes(attrObj)
+    }
+  }, [product, selectedVariantIdx])
+
+  const activeVariant = useMemo(() => {
+    if (!product?.varients || product.varients.length === 0) return null
+    return product.varients[selectedVariantIdx] || product.varients[0]
+  }, [product, selectedVariantIdx])
 
   const fetchProductDetail = async () => {
     if (productData || product) {
@@ -130,17 +152,68 @@ export default function ProductDetail({ productData = null, loadingState = null,
     )
   }
 
-  /* ── Derived Data ── */
-  const images = product.images?.length > 0 ? product.images : [{ url: DEFAULT_PRODUCT_IMAGE }]
-  const price = Number(product.price?.amount || 0)
-  const currency = product.price?.currency || 'INR'
+  /* ── Derived Data (Variant Fallback to Main Product) ── */
+  const variantImages = activeVariant?.images?.length > 0 ? activeVariant.images : null
+  const mainImages = product.images?.length > 0 ? product.images : [{ url: DEFAULT_PRODUCT_IMAGE }]
+  const images = variantImages || mainImages
+
+  const price = (activeVariant?.price?.amount !== undefined && activeVariant?.price?.amount !== null && Number(activeVariant.price.amount) > 0)
+    ? Number(activeVariant.price.amount)
+    : Number(product.price?.amount || 0)
+
+  const currency = activeVariant?.price?.currency || product.price?.currency || 'INR'
+
   const seller = product.seller?.fullname || product.seller?.name || 'Verified Seller'
-  const stock = product.stock ?? product.quantity ?? null
+
+  const stock = (activeVariant?.stock !== undefined && activeVariant?.stock !== null)
+    ? Number(activeVariant.stock)
+    : (product.stock ?? product.quantity ?? null)
+
   const inStock = stock === null || stock > 0
   const category = product.category || product.type || null
   const formattedDate = product.createdAt
     ? new Date(product.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : null
+
+  const handleSelectVariantIdx = (idx) => {
+    setSelectedVariantIdx(idx)
+    setActiveImg(idx)
+    if (product?.varients?.[idx]) {
+      const v = product.varients[idx]
+      const attrObj = v?.attribute
+        ? (v.attribute instanceof Map
+            ? Object.fromEntries(v.attribute)
+            : typeof v.attribute === 'object'
+            ? v.attribute
+            : {})
+        : {}
+      if (Object.keys(attrObj).length > 0) {
+        setSelectedAttributes(attrObj)
+      }
+    }
+  }
+
+  const handleSelectAttribute = (key, val) => {
+    const newAttrs = { ...selectedAttributes, [key]: val }
+    setSelectedAttributes(newAttrs)
+
+    if (product?.varients) {
+      const matchIdx = product.varients.findIndex((v) => {
+        const vAttr = v.attribute
+          ? (v.attribute instanceof Map
+              ? Object.fromEntries(v.attribute)
+              : typeof v.attribute === 'object'
+              ? v.attribute
+              : {})
+          : {}
+        return Object.entries(newAttrs).every(([k, vVal]) => !vAttr[k] || vAttr[k] === vVal)
+      })
+      if (matchIdx !== -1) {
+        setSelectedVariantIdx(matchIdx)
+        setActiveImg(matchIdx)
+      }
+    }
+  }
 
   const specs = [
     product.brand && { k: 'Brand', v: product.brand },
@@ -251,7 +324,22 @@ export default function ProductDetail({ productData = null, loadingState = null,
               varients={product.varients}
               title={product.title}
               activeIdx={activeImg}
-              onSelectIdx={setActiveImg}
+              onSelectIdx={(idx) => {
+                setActiveImg(idx)
+                if (product.varients?.[idx]) {
+                  const v = product.varients[idx]
+                  const attrObj = v?.attribute
+                    ? (v.attribute instanceof Map
+                        ? Object.fromEntries(v.attribute)
+                        : typeof v.attribute === 'object'
+                        ? v.attribute
+                        : {})
+                    : {}
+                  if (Object.keys(attrObj).length > 0) {
+                    setSelectedAttributes(attrObj)
+                  }
+                }
+              }}
             />
           </div>
 
@@ -270,6 +358,19 @@ export default function ProductDetail({ productData = null, loadingState = null,
               </p>
             </div>
 
+            <div style={S.spacer} />
+
+            {/* 2. Variant Selector */}
+            <div data-fade>
+              <VariantSelector
+                varients={product.varients}
+                mainImages={product.images}
+                selectedVariantIdx={selectedVariantIdx}
+                onSelectVariantIdx={handleSelectVariantIdx}
+                selectedAttributes={selectedAttributes}
+                onSelectAttribute={handleSelectAttribute}
+              />
+            </div>
             <div style={S.spacer} />
 
             {/* 2. Price & Availability */}
