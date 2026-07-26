@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { useSelector } from "react-redux"
-import { Home, ShoppingBag, PlusCircle, LayoutDashboard, User, LogIn, Menu, X } from "lucide-react"
+import { Home, ShoppingBag, PlusCircle, LayoutDashboard, Menu, X } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -9,10 +9,10 @@ import { motion, AnimatePresence } from "framer-motion"
 const NavLink = ({ href, icon: Icon, label }) => (
   <Link
     to={href}
-    className="group flex items-center gap-2 text-xs font-semibold text-white/75 hover:text-white transition-colors whitespace-nowrap px-2.5 py-1 rounded-lg hover:bg-white/5"
+    className="group flex items-center gap-2 text-xs font-semibold text-white/90 hover:text-white transition-all whitespace-nowrap px-3 py-1.5 rounded-lg hover:bg-white/10 bg-transparent -translate-y-2.5"
   >
-    {Icon && <Icon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />}
-    <span>{label}</span>
+    {Icon && <Icon className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100 bg-transparent" />}
+    <span className="bg-transparent">{label}</span>
   </Link>
 )
 
@@ -20,13 +20,18 @@ export function NotchNavbar({ className, ...props }) {
   const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { user } = useSelector((state) => state.auth)
+  const cartState = useSelector((state) => state.cart)
+  const cartCount = cartState?.items?.length || 0
 
   const isSeller = user?.role === 'seller'
+
+  const NOTCH_BG = "#141416" // Kinda gray dark charcoal theme
 
   // Navigation items configuration according to Velora marketplace
   const items = {
     left: [
       { label: "Marketplace", href: "/", icon: Home },
+      { label: cartCount > 0 ? `Cart (${cartCount})` : "Cart", href: "/cart", icon: ShoppingBag },
       ...(isSeller ? [{ label: "Studio", href: "/seller/dashboard", icon: LayoutDashboard }] : [])
     ],
     right: [
@@ -37,49 +42,49 @@ export function NotchNavbar({ className, ...props }) {
   return (
     <>
       <header
-        className={cn("fixed top-0 inset-x-0 z-50 h-16 flex px-0 text-white select-none", className)}
+        className={cn("fixed top-0 inset-x-0 z-50 h-16 flex px-0 text-white select-none bg-transparent", className)}
         {...props}
       >
         {/* Left Side Bar - Flexible width */}
-        <div className="flex-1 h-10 bg-[#060606] z-20 relative min-w-0 border-b border-[#141414]">
+        <div className="flex-1 h-10 z-20 relative min-w-0 border-b border-[#26262a]" style={{ backgroundColor: NOTCH_BG }}>
           <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-            <line x1="0" y1="39.5" x2="100%" y2="39.5" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
-            <line x1="0" y1="36.5" x2="100%" y2="36.5" stroke="#ffffff" strokeOpacity={0.04} strokeWidth={0.5} />
+            <line x1="0" y1="39.5" x2="100%" y2="39.5" stroke="#ffffff" strokeOpacity={0.08} strokeWidth={0.5} />
+            <line x1="0" y1="36.5" x2="100%" y2="36.5" stroke="#ffffff" strokeOpacity={0.05} strokeWidth={0.5} />
           </svg>
         </div>
 
         {/* Responsive Notch Container - 3 Slices */}
-        <div className="flex h-16 relative z-10 shrink-0 -ml-px">
+        <div className="flex h-16 relative z-10 shrink-0 -ml-px bg-transparent">
 
           {/* Left Slice (Corner) */}
-          <div className="w-[50px] h-full relative shrink-0">
-            {/* Dark Glass Background */}
+          <div className="w-[50px] h-full relative shrink-0 bg-transparent">
+            {/* Charcoal Gray Background */}
             <div
-              className="absolute inset-0 bg-[#060606]"
-              style={{ clipPath: "path('M0 0 H50 V64 C25 64 25 40 0 40 Z')" }}
+              className="absolute inset-0"
+              style={{ backgroundColor: NOTCH_BG, clipPath: "path('M0 0 H50 V64 C25 64 25 40 0 40 Z')" }}
             />
             {/* Outlines */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 50 64">
-              <path d="M0 39.5 C25 39.5 25 63.5 50 63.5" fill="none" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
-              <path d="M0 36.5 C25 36.5 25 60.5 50 60.5" fill="none" stroke="#ffffff" strokeOpacity={0.04} strokeWidth={0.5} />
+              <path d="M0 39.5 C25 39.5 25 63.5 50 63.5" fill="none" stroke="#ffffff" strokeOpacity={0.1} strokeWidth={0.5} />
+              <path d="M0 36.5 C25 36.5 25 60.5 50 60.5" fill="none" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
             </svg>
           </div>
 
           {/* Center Slice (Flexible Content Area) */}
-          <div className="flex-1 h-full relative min-w-0 -ml-px">
+          <div className="flex-1 h-full relative min-w-0 -ml-px bg-transparent">
             {/* Background & Lines Layer */}
-            <div className="absolute inset-0 bg-[#060606]">
+            <div className="absolute inset-0" style={{ backgroundColor: NOTCH_BG }}>
               <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
-                <line x1="0" y1="63.5" x2="100%" y2="63.5" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
-                <line x1="0" y1="60.5" x2="100%" y2="60.5" stroke="#ffffff" strokeOpacity={0.04} strokeWidth={0.5} />
+                <line x1="0" y1="63.5" x2="100%" y2="63.5" stroke="#ffffff" strokeOpacity={0.1} strokeWidth={0.5} />
+                <line x1="0" y1="60.5" x2="100%" y2="60.5" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
               </svg>
             </div>
 
-            {/* Content Layer */}
-            <div className="relative w-full h-full flex items-end justify-center pb-2.5 px-10 md:px-16 gap-6 md:gap-10">
+            {/* Content Layer - Shifted Up Vertically */}
+            <div className="relative w-full h-full flex items-end justify-center pb-6 px-10 md:px-16 gap-6 md:gap-10 bg-transparent">
 
               {/* Desktop Left Nav */}
-              <nav className="hidden md:flex gap-5 md:gap-7 mb-0.5 shrink-0 items-center">
+              <nav className="hidden md:flex gap-5 md:gap-7 shrink-0 items-center bg-transparent">
                 {items.left.map((item) => (
                   <NavLink key={item.label} {...item} />
                 ))}
@@ -87,49 +92,43 @@ export function NotchNavbar({ className, ...props }) {
 
               {/* Mobile Menu Button (Left) */}
               <button
-                className="md:hidden mb-1 p-1 text-white/70 hover:text-white transition-colors"
+                className="md:hidden p-1 text-white/70 hover:text-white transition-colors bg-transparent -translate-y-2.5"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
               >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {isMobileMenuOpen ? <X className="w-5 h-5 bg-transparent" /> : <Menu className="w-5 h-5 bg-transparent" />}
               </button>
 
               {/* Logo (Center Notch) */}
-              <div className="flex justify-center shrink-0 mx-2 md:mx-4 mb-0.5">
-                <Link to="/" className="flex items-center gap-2.5 group">
-                  <div className="w-7 h-7 rounded-lg bg-[#141414] border-t border-[#242424] border-l border-[#242424] border-r border-[#080808] border-b border-[#080808] shadow-md shadow-black/50 grid place-items-center text-xs font-bold text-white group-hover:scale-105 transition-transform">
+              <div className="flex justify-center shrink-0 mx-2 md:mx-4 bg-transparent -translate-y-2.5">
+                <Link to="/" aria-label="Velora Home" className="flex items-center group bg-transparent">
+                  <div className="w-7 h-7 rounded-lg bg-[#222226] border-t border-[#34343a] border-l border-[#34343a] border-r border-[#101012] border-b border-[#101012] shadow-md shadow-black/50 grid place-items-center text-xs font-bold text-white group-hover:scale-105 transition-transform">
                     V
                   </div>
-                  <span className="font-bold text-sm tracking-wide text-white font-college">
-                    Velora
-                  </span>
                 </Link>
               </div>
 
               {/* Desktop Right Nav */}
-              <nav className="hidden md:flex gap-5 md:gap-7 items-center shrink-0 mb-0.5">
+              <nav className="hidden md:flex gap-5 md:gap-7 items-center shrink-0 bg-transparent">
                 {items.right.map((item) => (
                   <NavLink key={item.label} {...item} />
                 ))}
 
-                <div className="flex gap-4 shrink-0 items-center">
+                <div className="flex gap-4 shrink-0 items-center bg-transparent -translate-y-2.5">
                   {user ? (
-                    <div className="flex items-center gap-2.5 pl-2.5 pr-4 py-1.5 rounded-full bg-[#121212] border-t border-[#222222] border-l border-[#222222] border-r border-[#080808] border-b border-[#080808] shadow-sm shadow-black/60 whitespace-nowrap shrink-0">
-                      <div className="w-5 h-5 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center text-[10px] font-bold text-white/90 uppercase shrink-0">
+                    <div className="flex items-center gap-2 px-2 py-1.5 whitespace-nowrap shrink-0 bg-transparent">
+                      <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white/90 uppercase shrink-0">
                         {user.fullname?.[0] || 'U'}
                       </div>
-                      <span className="text-xs font-semibold text-white/90 font-sans tracking-tight shrink-0">
+                      <span className="text-xs font-semibold text-white/90 tracking-tight shrink-0 bg-transparent">
                         {user.fullname}
-                      </span>
-                      <span className="text-[10px] font-medium text-white/40 uppercase tracking-normal shrink-0">
-                        • {user.role}
                       </span>
                     </div>
                   ) : (
                     <>
                       <Link
                         to="/login"
-                        className="text-xs font-medium text-white/70 hover:text-white transition-colors whitespace-nowrap"
+                        className="text-xs font-medium text-white/70 hover:text-white transition-colors whitespace-nowrap bg-transparent"
                       >
                         Log in
                       </Link>
@@ -145,36 +144,32 @@ export function NotchNavbar({ className, ...props }) {
               </nav>
 
               {/* Mobile Action Placeholder */}
-              <div className="md:hidden flex items-center gap-2 mb-1">
-                <Link to="/" className="text-xs text-white/70 font-semibold">
-                  Velora
-                </Link>
-              </div>
+              <div className="md:hidden flex items-center gap-2 bg-transparent -translate-y-2.5" />
 
             </div>
           </div>
 
           {/* Right Slice (Corner) */}
-          <div className="w-[50px] h-full relative shrink-0 -ml-px">
-            {/* Dark Glass Background */}
+          <div className="w-[50px] h-full relative shrink-0 -ml-px bg-transparent">
+            {/* Charcoal Gray Background */}
             <div
-              className="absolute inset-0 bg-[#060606]"
-              style={{ clipPath: "path('M0 0 H50 V40 C25 40 25 64 0 64 Z')" }}
+              className="absolute inset-0"
+              style={{ backgroundColor: NOTCH_BG, clipPath: "path('M0 0 H50 V40 C25 40 25 64 0 64 Z')" }}
             />
             {/* Outlines */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 50 64">
-              <path d="M0 63.5 C25 63.5 25 39.5 50 39.5" fill="none" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
-              <path d="M0 60.5 C25 60.5 25 36.5 50 36.5" fill="none" stroke="#ffffff" strokeOpacity={0.04} strokeWidth={0.5} />
+              <path d="M0 63.5 C25 63.5 25 39.5 50 39.5" fill="none" stroke="#ffffff" strokeOpacity={0.1} strokeWidth={0.5} />
+              <path d="M0 60.5 C25 60.5 25 36.5 50 36.5" fill="none" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
             </svg>
           </div>
 
         </div>
 
         {/* Right Side Bar - Flexible width */}
-        <div className="flex-1 h-10 bg-[#060606] z-20 relative min-w-0 -ml-px border-b border-[#141414]">
+        <div className="flex-1 h-10 z-20 relative min-w-0 -ml-px border-b border-[#26262a]" style={{ backgroundColor: NOTCH_BG }}>
           <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-            <line x1="0" y1="39.5" x2="100%" y2="39.5" stroke="#ffffff" strokeOpacity={0.06} strokeWidth={0.5} />
-            <line x1="0" y1="36.5" x2="100%" y2="36.5" stroke="#ffffff" strokeOpacity={0.04} strokeWidth={0.5} />
+            <line x1="0" y1="39.5" x2="100%" y2="39.5" stroke="#ffffff" strokeOpacity={0.08} strokeWidth={0.5} />
+            <line x1="0" y1="36.5" x2="100%" y2="36.5" stroke="#ffffff" strokeOpacity={0.05} strokeWidth={0.5} />
           </svg>
         </div>
       </header>
@@ -187,7 +182,7 @@ export function NotchNavbar({ className, ...props }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-16 z-40 bg-[#080808] border-b border-[#1a1a1a] p-4 md:hidden shadow-2xl"
+            className="fixed inset-x-0 top-16 z-40 bg-[#141416] border-b border-[#26262a] p-4 md:hidden shadow-2xl"
           >
             <nav className="flex flex-col gap-2">
               {[...items.left, ...items.right].map((item) => (
@@ -207,7 +202,6 @@ export function NotchNavbar({ className, ...props }) {
               {user ? (
                 <div className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
                   <span className="font-medium text-white">{user.fullname}</span>
-                  <span className="text-xs uppercase tracking-wider text-white/50">{user.role}</span>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
@@ -234,3 +228,5 @@ export function NotchNavbar({ className, ...props }) {
     </>
   )
 }
+
+export default NotchNavbar

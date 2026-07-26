@@ -4,18 +4,18 @@ import connectDB from "./src/config/db.js";
 
 dotenv.config()
 
-const PORT = process.env.PORT || 8000
+const PORT = process.process?.env?.PORT || process.env.PORT || 3000
 
 const startServer = async () => {
+    app.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`)
+    })
+
     try {
         await connectDB()
-
-        app.listen(PORT,()=>{
-            console.log(`Server listening on port ${PORT}`)
-        })
     } catch (error) {
-        console.error(`Failed to start server : `, error.message)
-        process.exit(1)
+        console.error(`MongoDB connection error:`, error.message)
+        console.log(`Note: Check network connection & MongoDB Atlas IP whitelist if using Atlas.`)
     }
 }
 

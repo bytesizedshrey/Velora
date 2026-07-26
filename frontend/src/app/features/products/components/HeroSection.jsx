@@ -1,14 +1,12 @@
 import React from 'react'
-import { SparklesIcon } from '../../../../shared/icons'
+import { useSelector } from 'react-redux'
+import AsciiArt from '../../../../components/ui/ascii-art'
 
-const SearchIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-)
+const HeroSection = ({ totalProductsCount = 0 }) => {
+  const { user } = useSelector((state) => state.auth)
+  const username = user?.fullname || user?.name || 'MEMBER'
+  const greetingText = `HELLO, ${username.toUpperCase()}`
 
-const HeroSection = ({ totalProductsCount = 0, searchQuery = '', onSearchChange }) => {
   return (
     <div
       data-anim
@@ -43,120 +41,34 @@ const HeroSection = ({ totalProductsCount = 0, searchQuery = '', onSearchChange 
       />
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 540 }}>
-        {/* Search Bar Input (Replaced Curated Marketplace Pill) */}
-        <div style={{ position: 'relative', maxWidth: 320, marginBottom: 16 }}>
-          <span
-            style={{
-              position: 'absolute',
-              left: 12,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'rgba(255,255,255,0.3)',
-              display: 'flex',
-              pointerEvents: 'none',
-            }}
-          >
-            <SearchIcon />
-          </span>
-          <input
-            type="text"
-            placeholder="Search marketplace..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange?.(e.target.value)}
-            style={{
-              width: '100%',
-              height: 38,
-              padding: '0 12px 0 34px',
-              borderRadius: 10,
-              background: '#060606',
-              borderTop: '1px solid #080808',
-              borderLeft: '1px solid #080808',
-              borderRight: '1px solid #1a1a1a',
-              borderBottom: '1px solid #1a1a1a',
-              boxShadow: 'inset 0 3px 8px rgba(0,0,0,0.7)',
-              color: 'rgba(255,255,255,0.85)',
-              fontSize: '0.82rem',
-              fontFamily: 'Inter, system-ui',
-              outline: 'none',
-            }}
-          />
-        </div>
         <h1
           style={{
-            fontFamily: "'Colleged', 'Bungee', 'Graduate', system-ui",
-            fontSize: '2.2rem',
+            fontSize: '2.8rem',
             fontWeight: 800,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
+            letterSpacing: '-0.03em',
             color: '#ffffff',
-            lineHeight: 1.15,
+            lineHeight: 1.1,
             marginBottom: 8,
           }}
         >
-          Velora Luxury Collection
+          Velora
         </h1>
         <p
           style={{
-            fontFamily: "'Duality', 'Orbitron', 'Rajdhani', system-ui",
-            fontSize: '0.85rem',
-            color: 'rgba(255,255,255,0.45)',
+            fontSize: '0.95rem',
+            color: 'rgba(255,255,255,0.55)',
             lineHeight: 1.5,
             margin: 0,
-            letterSpacing: '0.02em',
+            letterSpacing: '0.01em',
           }}
         >
-          Explore premium products crafted and verified by trusted global sellers. High-artisan goods, electronics, and rare collectibles.
+          Modern ready-to-wear & timeless luxury essentials.
         </p>
       </div>
 
-      {/* Quick Stats Plaque */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-          position: 'relative',
-          zIndex: 1,
-          flexShrink: 0,
-        }}
-      >
-        <div
-          style={{
-            padding: '10px 16px',
-            borderRadius: 10,
-            background: '#060606',
-            borderTop: '1px solid #080808',
-            borderLeft: '1px solid #080808',
-            borderRight: '1px solid #1a1a1a',
-            borderBottom: '1px solid #1a1a1a',
-            boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.6)',
-            textAlign: 'right',
-          }}
-        >
-          <p
-            style={{
-              fontSize: '0.58rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              color: 'rgba(255,255,255,0.25)',
-              margin: 0,
-              fontWeight: 600,
-            }}
-          >
-            Active Goods
-          </p>
-          <h4
-            style={{
-              fontFamily: 'Geist, system-ui',
-              fontSize: '1.25rem',
-              fontWeight: 700,
-              color: '#ffffff',
-              margin: 0,
-            }}
-          >
-            {totalProductsCount} Items
-          </h4>
-        </div>
+      {/* Aceternity ASCII Art Component displaying Hello + Username */}
+      <div style={{ flexShrink: 0, zIndex: 1, width: 230 }}>
+        <AsciiArt text={greetingText} />
       </div>
     </div>
   )

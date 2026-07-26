@@ -46,10 +46,11 @@ export const addToCart = async (req, res) => {
             }
             isProductAlreadyInCart.quantity = quantityInCart + numQuantity
             await cart.save()
+            const updatedCart = await cartModel.findOne({ user: req.user._id }).populate("items.product")
             return res.status(200).json({
                 message: "Cart updated successfully",
                 success: true,
-                cart
+                cart: updatedCart
             })
         }
 
@@ -61,20 +62,15 @@ export const addToCart = async (req, res) => {
         }
 
         // 5. Add new item to cart
-        const updatedCart = await cartModel.findOneAndUpdate(
-            { user: req.user._id },
-            {
-                $push: {
-                    items: {
-                        product: productId,
-                        variant: effectiveVarientId,
-                        quantity: numQuantity,
-                        price: variantPrice
-                    }
-                }
-            },
-            { new: true }
-        )
+        cart.items.push({
+            product: productId,
+            variant: effectiveVarientId,
+            quantity: numQuantity,
+            price: variantPrice
+        })
+
+        await cart.save()
+        const updatedCart = await cartModel.findOne({ user: req.user._id }).populate("items.product")
 
         return res.status(200).json({
             message: "Item added to cart successfully",
@@ -95,8 +91,65 @@ export const getCart = async (req, res) => {
     try {
         const user = req.user._id
         const cart = await cartModel.findOne({ user }).populate("items.product")
-        return res.status(200).json({ success: true, cart })
+        return res.status(200).json({ success: true, cart: cart || { items: [] } })
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message })
+    }
+}
+
+export const updateCartItem = async (req, res) => {
+    try {
+        const { itemId } = req.params
+        const { quantity } = req.body
+        const newQty = Number(quantity)
+
+        const cart = await cartModel.findOne({ user: req.user._id })
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found", success: false })
+        }
+
+        const item = cart.items.id(itemId) || cart.items.find(i => i._id.toString() === itemId)
+        if (!item) {
+            return res.status(404).json({ message: "Cart item not found", success: false })
+        }
+
+        if (newQty <= 0) {
+            cart.items = cart.items.filter(i => i._id.toString() !== itemId)
+        } else {
+            const product = await productModel.findById(item.product)
+            const variantObj = product?.varients?.find(v => v._id.toString() === item.variant?.toString())
+            const stock = variantObj ? (variantObj.stock ?? 0) : (product?.stock ?? 0)
+
+            if (newQty > stock) {
+                return res.status(400).json({
+                    message: `Only ${stock} items available in stock`,
+                    success: false
+                })
+            }
+            item.quantity = newQty
+        }
+
+        await cart.save()
+        const updatedCart = await cartModel.findOne({ user: req.user._id }).populate("items.product")
+        return res.status(200).json({ message: "Cart updated successfully", success: true, cart: updatedCart })
+    } catch (err) {
+        return res.status(500).json({ message: err.message, success: false })
+    }
+}
+
+export const removeCartItem = async (req, res) => {
+    try {
+        const { itemId } = req.params
+        const cart = await cartModel.findOne({ user: req.user._id })
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found", success: false })
+        }
+
+        cart.items = cart.items.filter(i => i._id.toString() !== itemId)
+        await cart.save()
+        const updatedCart = await cartModel.findOne({ user: req.user._id }).populate("items.product")
+        return res.status(200).json({ message: "Item removed from cart", success: true, cart: updatedCart })
+    } catch (err) {
+        return res.status(500).json({ message: err.message, success: false })
     }
 }

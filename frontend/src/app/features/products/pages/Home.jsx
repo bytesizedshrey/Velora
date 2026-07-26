@@ -80,7 +80,6 @@ const Home = () => {
         minHeight: '100vh',
         background: '#040404',
         color: '#ffffff',
-        fontFamily: "'Duality', 'Orbitron', 'Space Grotesk', system-ui",
         display: 'flex',
         flexDirection: 'column',
       }}
