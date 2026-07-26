@@ -148,20 +148,20 @@ export function DiagonalCarousel({
       {showControls && (
         <div
           className={cn(
-            "absolute inset-x-4 bottom-5 z-10 mx-auto flex w-fit items-center justify-center gap-3 rounded-full border border-neutral-300/80 bg-neutral-200/70 px-2 text-neutral-700 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-neutral-900/70 dark:text-neutral-100",
+            "absolute inset-x-4 bottom-5 z-10 mx-auto flex w-fit items-center justify-center gap-3 rounded-full border-t border-l border-white/20 border-r border-b border-black/90 bg-gradient-to-b from-[#1e1e24] to-[#0d0d10] px-3 py-1 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.8),0_10px_24px_rgba(0,0,0,0.95)] backdrop-blur-md",
             controlsClassName
           )}>
           <button
             type="button"
             aria-label="Show previous slide"
             disabled={isPreviousDisabled}
-            className="inline-flex size-9 items-center justify-center rounded-full transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-35 dark:hover:bg-white/10"
+            className="inline-flex size-8 items-center justify-center rounded-full transition-all hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
             onClick={() => selectSlide(currentIndex - 1)}>
-            <ChevronLeft className="size-5" />
+            <ChevronLeft className="size-4 text-white/90" />
           </button>
 
           {showDots && (
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2 px-1">
               {items.map((item, index) => (
                 <button
                   key={`${item.title}-${index}`}
@@ -169,8 +169,10 @@ export function DiagonalCarousel({
                   aria-label={`Show slide ${index + 1}: ${item.title}`}
                   aria-current={currentIndex === index ? "true" : undefined}
                   className={cn(
-                    "h-2 rounded-full bg-current transition-[width,opacity] duration-300",
-                    currentIndex === index ? "w-7 opacity-100" : "w-2 opacity-30"
+                    "h-2 rounded-full transition-all duration-300 cursor-pointer",
+                    currentIndex === index
+                      ? "w-7 bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)]"
+                      : "w-2 bg-white/20 hover:bg-white/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]"
                   )}
                   onClick={() => selectSlide(index)} />
               ))}
@@ -181,9 +183,9 @@ export function DiagonalCarousel({
             type="button"
             aria-label="Show next slide"
             disabled={isNextDisabled}
-            className="inline-flex size-9 items-center justify-center rounded-full transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-35 dark:hover:bg-white/10"
+            className="inline-flex size-8 items-center justify-center rounded-full transition-all hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
             onClick={() => selectSlide(currentIndex + 1)}>
-            <ChevronRight className="size-5" />
+            <ChevronRight className="size-4 text-white/90" />
           </button>
         </div>
       )}

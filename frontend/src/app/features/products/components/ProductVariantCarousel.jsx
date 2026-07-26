@@ -1,5 +1,5 @@
 import React from 'react'
-import { DiagonalCarousel } from '@/components/ui/diagonal-carousel'
+import { DiagonalCarousel } from '../../../../components/ui/diagonal-carousel'
 import { DEFAULT_PRODUCT_IMAGE } from '../utils/constants'
 
 export const ProductVariantCarousel = ({
@@ -44,7 +44,7 @@ export const ProductVariantCarousel = ({
   }
 
   return (
-    <div className="relative w-full aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-[#141414] to-[#0a0a0a] shadow-[0_24px_48px_#000000,0_12px_24px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.12)] border border-white/10 flex items-center justify-center p-4">
+    <div className="relative w-full aspect-square rounded-3xl overflow-hidden bg-transparent border-none shadow-none flex items-center justify-center p-2">
       <DiagonalCarousel
         items={carouselItems}
         activeIndex={activeIdx}
@@ -55,8 +55,8 @@ export const ProductVariantCarousel = ({
         showControls={true}
         showDots={true}
         className="w-full h-full min-h-[340px]"
-        imageClassName="border border-white/10 rounded-2xl shadow-2xl"
-        controlsClassName="bg-black/80 border-white/15 text-white"
+        imageClassName="border-t border-l border-white/30 border-r border-b border-black/90 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_20px_50px_rgba(0,0,0,0.95)]"
+        controlsClassName="bg-gradient-to-b from-[#1c1c22] to-[#0a0a0d] border-t border-l border-white/25 border-r border-b border-black/90 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.8),0_10px_24px_rgba(0,0,0,0.95)]"
       />
     </div>
   )

@@ -19,6 +19,10 @@ const productSchema = new mongoose.Schema({
         type : priceSchema,
         required : true,
     },
+    stock : {
+        type : Number,
+        default : 100
+    },
     images : [
         {
             url :{
@@ -43,7 +47,7 @@ const productSchema = new mongoose.Schema({
             ],
             stock : {
                 type : Number,
-                default : 0
+                default : 100
             },
             attribute : {
                 type : Map,

@@ -3,7 +3,7 @@ import { uploadFile } from "../services/storage.service.js";
 
 export const createProduct = async (req, res) => {
     try {
-        const { title, description, priceAmount, priceCurrency } = req.body
+        const { title, description, priceAmount, priceCurrency, stock } = req.body
         const seller = req.seller || req.user
 
         if (!seller) {
@@ -39,6 +39,8 @@ export const createProduct = async (req, res) => {
             }]
         }
 
+        const productStock = stock !== undefined && stock !== null && stock !== "" ? Number(stock) : 100
+
         const product = await productModel.create({
             title,
             description,
@@ -46,6 +48,7 @@ export const createProduct = async (req, res) => {
                 amount: priceAmount,
                 currency: priceCurrency || "INR"
             },
+            stock: productStock,
             images,
             seller: seller._id
         })
@@ -67,6 +70,13 @@ export async function getSellerProducts(req, res) {
         if (!seller) {
             return res.status(401).json({ message: "Unauthorized", success: false });
         }
+
+        // Auto update stock to 100 for existing products with 0 or missing stock
+        await productModel.updateMany(
+            { seller: seller._id, $or: [{ stock: { $exists: false } }, { stock: 0 }, { stock: null }] },
+            { $set: { stock: 100 } }
+        )
+
         const products = await productModel.find({ seller: seller._id })
 
         return res.status(200).json({
@@ -82,6 +92,12 @@ export async function getSellerProducts(req, res) {
 
 export async function getAllProducts(req, res) {
     try {
+        // Auto update stock to 100 for all existing products with 0 or missing stock
+        await productModel.updateMany(
+            { $or: [{ stock: { $exists: false } }, { stock: 0 }, { stock: null }] },
+            { $set: { stock: 100 } }
+        )
+
         const products = await productModel.find()
             .populate('seller', 'fullname email')
             .sort({ createdAt: -1 })
@@ -104,6 +120,10 @@ export async function getProductById(req, res) {
         if (!product) {
             return res.status(404).json({ message: "Product not found", success: false })
         }
+        if (!product.stock || product.stock === 0) {
+            product.stock = 100
+            await product.save()
+        }
         return res.status(200).json({
             message: "Product fetched successfully",
             success: true,
@@ -125,6 +145,11 @@ export async function getProductDetails(req,res) {
             message : "Product not found",
             success : false
         })
+    }
+
+    if (!product.stock || product.stock === 0) {
+        product.stock = 100
+        await product.save()
     }
 
     return res.status(200).json({
@@ -183,7 +208,7 @@ export async function addProductVarient(req, res) {
 
     const priceAmount = Number(req.body.priceAmount || req.body.price || product.price?.amount || 0)
     const priceCurrency = req.body.priceCurrency || product.price?.currency || "INR"
-    const stock = Number(req.body.stock || 0)
+    const stock = Number(req.body.stock || 100)
 
     let attribute = {}
     if (req.body.attribute) {
@@ -204,24 +229,6 @@ export async function addProductVarient(req, res) {
       }
     }
 
-    product.varients.push({
-        images,
-        price: {
-            amount: price || product.price.amount,
-            currency : req.body.priceCurrency || product.price.currency
-        },
-        stock,
-        attributes
-    })
-
-    await product.save()
-
-    return res.status(200).json({
-        message : "product varient added",
-        success : true,
-        product
-    })
-
     if (!product.varients) {
       product.varients = []
     }
@@ -238,6 +245,4 @@ export async function addProductVarient(req, res) {
     console.error("Error in addProductVarient controller:", error)
     return res.status(500).json({ message: "Internal server error", success: false, error: error.message })
   }
-
-
 }

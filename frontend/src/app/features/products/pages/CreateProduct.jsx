@@ -96,7 +96,7 @@ const PanelLabel = ({ n, text }) => (
 const CreateProduct = () => {
   const { handleCreateProduct } = useProduct()
   const fileInputRef = useRef(null)
-  const [form, setForm] = useState({ title: '', description: '', priceAmount: '', priceCurrency: 'INR' })
+  const [form, setForm] = useState({ title: '', description: '', priceAmount: '', priceCurrency: 'INR', stock: '100' })
   const [images, setImages] = useState([])
   const [dragOver, setDragOver] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -122,7 +122,13 @@ const CreateProduct = () => {
     setLoading(true)
     try {
       const fd = new FormData()
-      Object.entries({ title: form.title, description: form.description, priceAmount: form.priceAmount, priceCurrency: form.priceCurrency }).forEach(([k, v]) => fd.append(k, v))
+      Object.entries({
+        title: form.title,
+        description: form.description,
+        priceAmount: form.priceAmount,
+        priceCurrency: form.priceCurrency,
+        stock: form.stock || '100',
+      }).forEach(([k, v]) => fd.append(k, v))
       images.forEach(img => fd.append('images', img.file))
       await handleCreateProduct(fd)
     } catch (err) { setError(err?.message || 'Something went wrong.') }
@@ -190,15 +196,15 @@ const CreateProduct = () => {
             <PanelLabel n={1} text="Product Details" />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <Field id="title" label="Title *" value={form.title} onChange={set('title')} />
-              <Field id="description" label="Description *" multiline rows={4} value={form.description} onChange={set('description')} />
+              <Field id="description" label="Description *" multiline rows={3} value={form.description} onChange={set('description')} />
             </div>
           </Panel>
 
           <Panel>
-            <PanelLabel n={2} text="Pricing" />
+            <PanelLabel n={2} text="Pricing & Inventory" />
             <div style={{ display: 'flex', gap: 10 }}>
               {/* Currency — debossed */}
-              <div style={{ width: 100, flexShrink: 0 }}>
+              <div style={{ width: 90, flexShrink: 0 }}>
                 <label style={{ display: 'block', marginBottom: 6, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.28)', fontFamily: 'Inter, system-ui', fontWeight: 600 }}>Currency</label>
                 <div style={{
                   borderRadius: 10, background: '#030303',
@@ -206,13 +212,16 @@ const CreateProduct = () => {
                   borderRight: '1px solid #1a1a1a', borderBottom: '1px solid #1a1a1a',
                   boxShadow: 'inset 0 3px 8px rgba(0,0,0,0.6)',
                 }}>
-                  <select value={form.priceCurrency} onChange={set('priceCurrency')} style={{ width: '100%', height: 43, padding: '0 12px', background: 'transparent', border: 'none', outline: 'none', color: 'rgba(255,255,255,0.82)', fontFamily: 'Inter, system-ui', fontSize: '0.85rem', cursor: 'pointer', appearance: 'none' }}>
+                  <select value={form.priceCurrency} onChange={set('priceCurrency')} style={{ width: '100%', height: 43, padding: '0 10px', background: 'transparent', border: 'none', outline: 'none', color: 'rgba(255,255,255,0.82)', fontFamily: 'Inter, system-ui', fontSize: '0.85rem', cursor: 'pointer', appearance: 'none' }}>
                     {CURRENCIES.map(c => <option key={c} value={c} style={{ background: '#0c0c0c' }}>{c}</option>)}
                   </select>
                 </div>
               </div>
               <div style={{ flex: 1 }}>
                 <Field id="priceAmount" label="Amount *" type="number" value={form.priceAmount} onChange={set('priceAmount')} />
+              </div>
+              <div style={{ width: 110, flexShrink: 0 }}>
+                <Field id="stock" label="Quantity *" type="number" value={form.stock} onChange={set('stock')} />
               </div>
             </div>
             {form.priceAmount && parseFloat(form.priceAmount) > 0 && (
@@ -227,6 +236,9 @@ const CreateProduct = () => {
                 <span style={{ fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)' }}>Listing at</span>
                 <span style={{ fontSize: '0.82rem', fontFamily: 'Geist, system-ui', fontWeight: 600, color: 'rgba(212,212,212,0.88)' }}>
                   {form.priceCurrency} {parseFloat(form.priceAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </span>
+                <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', marginLeft: 4 }}>
+                  • {form.stock || 100} units available
                 </span>
               </div>
             )}
