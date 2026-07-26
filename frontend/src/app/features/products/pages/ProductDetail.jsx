@@ -7,6 +7,7 @@ import { DEFAULT_PRODUCT_IMAGE } from '../utils/constants'
 import ProductVariantCarousel from '../components/ProductVariantCarousel'
 import AddVariantModal from '../components/AddVariantModal'
 import VariantSelector from '../components/VariantSelector'
+import { useCart } from '../../cart/hook/useCart'
 
 const NOTCH_H = 64
 const TOP_PAD = NOTCH_H + 48  // 112px clearance from notch
@@ -15,6 +16,7 @@ export default function ProductDetail({ productData = null, loadingState = null,
   const { productId } = useParams()
   const navigate = useNavigate()
   const { handleGetProductById, handleAddProductVarient } = useProduct()
+  const { handleAddItem } = useCart()
 
   const reduxProducts = useSelector(
     (s) => s.product?.products || s.products?.products || []
@@ -32,6 +34,8 @@ export default function ProductDetail({ productData = null, loadingState = null,
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0)
   const [selectedAttributes, setSelectedAttributes] = useState({})
+  const [addingToCart, setAddingToCart] = useState(false)
+  const [cartMessage, setCartMessage] = useState({ text: '', isError: false })
   const pageRef = useRef(null)
 
   useEffect(() => {
@@ -212,6 +216,41 @@ export default function ProductDetail({ productData = null, loadingState = null,
         setSelectedVariantIdx(matchIdx)
         setActiveImg(matchIdx)
       }
+    }
+  }
+
+  const handleAddToCartAsync = async () => {
+    if (!product) return
+    const targetVarientId = activeVariant?._id
+      || product.varients?.[selectedVariantIdx]?._id
+      || product.varients?.[0]?._id
+      || product._id
+      || productId
+
+    if (!targetVarientId) {
+      setCartMessage({ text: 'Unable to identify product variant.', isError: true })
+      return
+    }
+
+    setAddingToCart(true)
+    setCartMessage({ text: '', isError: false })
+
+    try {
+      const res = await handleAddItem({
+        productId: product._id || productId,
+        varientId: targetVarientId,
+        quantity: qty
+      })
+      if (res?.success !== false) {
+        setCartMessage({ text: `Added ${qty}x "${product.title}" to cart successfully!`, isError: false })
+      } else {
+        setCartMessage({ text: res.message || 'Failed to add item to cart', isError: true })
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to add item to cart'
+      setCartMessage({ text: errorMsg, isError: true })
+    } finally {
+      setAddingToCart(false)
     }
   }
 
@@ -659,8 +698,8 @@ export default function ProductDetail({ productData = null, loadingState = null,
 
                   {/* Add to Cart */}
                   <button
-                    onClick={addToCart}
-                    disabled={!inStock}
+                    onClick={handleAddToCartAsync}
+                    disabled={!inStock || addingToCart}
                     style={{
                       flex: 1,
                       height: 52,
@@ -674,8 +713,8 @@ export default function ProductDetail({ productData = null, loadingState = null,
                       borderRight: '1px solid #060606',
                       borderBottom: '1px solid #060606',
                       boxShadow: '0 8px 24px #000000, 0 3px 8px #000000, inset 0 1px 0 rgba(255,255,255,0.08)',
-                      cursor: inStock ? 'pointer' : 'not-allowed',
-                      opacity: inStock ? 1 : 0.4,
+                      cursor: (inStock && !addingToCart) ? 'pointer' : 'not-allowed',
+                      opacity: (inStock && !addingToCart) ? 1 : 0.4,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -684,23 +723,23 @@ export default function ProductDetail({ productData = null, loadingState = null,
                       transition: 'all 0.12s ease',
                     }}
                     onMouseEnter={e => {
-                      if (inStock) e.currentTarget.style.background = 'linear-gradient(180deg, #222222 0%, #141414 100%)'
+                      if (inStock && !addingToCart) e.currentTarget.style.background = 'linear-gradient(180deg, #222222 0%, #141414 100%)'
                     }}
                     onMouseLeave={e => {
-                      if (inStock) {
+                      if (inStock && !addingToCart) {
                         e.currentTarget.style.background = 'linear-gradient(180deg, #1a1a1a 0%, #0e0e0e 100%)'
                         e.currentTarget.style.transform = 'none'
                         e.currentTarget.style.boxShadow = '0 8px 24px #000000, 0 3px 8px #000000, inset 0 1px 0 rgba(255,255,255,0.08)'
                       }
                     }}
                     onMouseDown={e => {
-                      if (inStock) {
+                      if (inStock && !addingToCart) {
                         e.currentTarget.style.transform = 'translateY(1px)'
                         e.currentTarget.style.boxShadow = 'inset 0 4px 10px #000000, inset 0 1px 0 rgba(255,255,255,0.04)'
                       }
                     }}
                     onMouseUp={e => {
-                      if (inStock) {
+                      if (inStock && !addingToCart) {
                         e.currentTarget.style.transform = 'none'
                         e.currentTarget.style.boxShadow = '0 8px 24px #000000, 0 3px 8px #000000, inset 0 1px 0 rgba(255,255,255,0.08)'
                       }
@@ -709,11 +748,33 @@ export default function ProductDetail({ productData = null, loadingState = null,
                     <svg width="15" height="15" fill="none" stroke="rgba(255,255,255,0.7)" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    Add to Cart
+                    {addingToCart ? 'Adding...' : 'Add to Cart'}
                   </button>
                 </>
               )}
             </div>
+
+            {/* Cart Message Toast / Banner */}
+            {cartMessage.text && (
+              <div
+                style={{
+                  marginTop: 16,
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  fontSize: 13,
+                  fontWeight: 500,
+                  background: cartMessage.isError ? 'rgba(239, 68, 68, 0.12)' : 'rgba(52, 211, 153, 0.12)',
+                  border: cartMessage.isError ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(52, 211, 153, 0.3)',
+                  color: cartMessage.isError ? '#f87171' : '#34d399',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <span>{cartMessage.isError ? '⚠️' : '✓'}</span>
+                <span>{cartMessage.text}</span>
+              </div>
+            )}
 
           </div>
           {/* end right */}
