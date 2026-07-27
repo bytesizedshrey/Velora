@@ -5,6 +5,7 @@ import SellerCheckbox from "./SellerCheckbox"
 import LiquidMetalButton from "../../../../components/ui/liquid-metal"
 import useAudio from "../../../../shared/hooks/useAudio"
 import { registerUser, clearError } from "../state/auth.slice"
+import { BACKEND_URL } from "@/shared/config/apiConfig"
 
 
 /**
@@ -346,7 +347,7 @@ const RegisterForm = () => {
 
       {/* Google OAuth Link */}
       <a
-        href="http://localhost:3000/api/auth/google"
+        href={`${BACKEND_URL}/api/auth/google`}
         style={{
           display: "flex",
           alignItems: "center",

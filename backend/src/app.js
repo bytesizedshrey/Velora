@@ -1,14 +1,14 @@
-import express from "express"
-import cookieParser from "cookie-parser"
-import morgan from "morgan"
-import authRouter from './routes/auth.routes.js'
-import productRouter  from "./routes/product.routes.js"
-import cors from 'cors'
-import passport from "passport"
-import { Strategy as GoogleStrategy } from "passport-google-oauth20"
-import { config } from "./config/config.js"
-import cartRouter from "./routes/cart.routes.js"
-import paymentRouter from "./routes/payment.routes.js"
+import express from "express";
+import morgan from "morgan";
+import cors from "cors";
+import authRouter from "./routes/auth.routes.js";
+import productRouter from "./routes/product.routes.js";
+import cartRouter from "./routes/cart.routes.js";
+import paymentRouter from "./routes/payment.routes.js";
+import cookieParser from "cookie-parser";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import passport from "passport";
+import { config } from "./config/config.js";
 
 const app = express()
 
@@ -16,25 +16,45 @@ app.use(morgan("dev"))
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
 app.use(cookieParser())
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://velora-one-rouge.vercel.app",
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.some(o => origin.startsWith(o))) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     methods: ["GET","POST","PUT","DELETE"],
     credentials: true
 }))
 
 app.use(passport.initialize())
 if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
+    const callbackURL = process.env.BACKEND_URL
+      ? `${process.env.BACKEND_URL}/api/auth/google/callback`
+      : (process.env.NODE_ENV === "production"
+          ? "https://by-jessika-backend.onrender.com/api/auth/google/callback"
+          : "/api/auth/google/callback");
+
     passport.use(new GoogleStrategy({
         clientID: config.GOOGLE_CLIENT_ID,
         clientSecret: config.GOOGLE_CLIENT_SECRET,
-        callbackURL: "/api/auth/google/callback"
+        callbackURL
     }, (accessToken, refreshToken, profile, done) => {
         return done(null, profile)
     }))
 }
 
 app.get("/",(_req, res)=>{
-    res.status(200).json({message : "server is running"})
+    res.status(200).json({message : "By Jessika server is running"})
 })
 
 app.use("/api/auth",authRouter)

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router"
 import LiquidMetalButton from "../../../../components/ui/liquid-metal"
 import useAudio from "../../../../shared/hooks/useAudio"
 import { loginUser, clearError } from "../state/auth.slice"
+import { BACKEND_URL } from "@/shared/config/apiConfig"
 
 /**
  * FormField
@@ -306,7 +307,7 @@ const LoginForm = () => {
 
       {/* Google OAuth Link */}
       <a
-        href="http://localhost:3000/api/auth/google"
+        href={`${BACKEND_URL}/api/auth/google`}
         style={{
           display: "flex",
           alignItems: "center",

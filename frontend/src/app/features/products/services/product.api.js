@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API_BASE_URL } from "@/shared/config/apiConfig";
 
 const productApiInstance = axios.create({
-    baseURL : "/api/products",
-    withCredentials : true
+    baseURL: `${API_BASE_URL}/api/products`,
+    withCredentials: true
 });
 
 export async function createProduct(formData) {

@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from "@/shared/config/apiConfig";
 
 const paymentApiInstance = axios.create({
-  baseURL: "/api/payments",
+  baseURL: `${API_BASE_URL}/api/payments`,
   withCredentials: true,
 });
 

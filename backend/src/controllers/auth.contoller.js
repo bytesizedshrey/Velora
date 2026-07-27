@@ -3,6 +3,15 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
+const isProduction = process.env.NODE_ENV === "production" || !!process.env.FRONTEND_URL;
+
+const getCookieOptions = () => ({
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+});
+
 export const register = async (req, res) => {
     try {
         const { email, password, fullname, role } = req.body
@@ -32,7 +41,7 @@ export const register = async (req, res) => {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token)
+        res.cookie("token", token, getCookieOptions())
 
         return res.status(201).json({
             message: "User registered successfully",
@@ -74,7 +83,7 @@ export const login = async (req, res) => {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token)
+        res.cookie("token", token, getCookieOptions())
 
         return res.status(200).json({
             message: "User logged in successfully",
@@ -114,17 +123,13 @@ export const googleCallback = async (req, res) => {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax"
-        })
+        res.cookie("token", token, getCookieOptions())
 
-        const targetFrontend = process.env.FRONTEND_URL || "http://localhost:5173"
+        const targetFrontend = process.env.FRONTEND_URL || "https://velora-one-rouge.vercel.app"
         res.redirect(targetFrontend)
     } catch (error) {
         console.error("Error in googleCallback:", error);
-        const targetFrontend = process.env.FRONTEND_URL || "http://localhost:5173"
+        const targetFrontend = process.env.FRONTEND_URL || "https://velora-one-rouge.vercel.app"
         res.redirect(`${targetFrontend}/login`)
     }
 }
