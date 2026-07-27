@@ -412,7 +412,7 @@ const CreateProduct = () => {
             boxShadow: '0 2px 4px rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.35)',
           }}><BackIcon /></button>
           <span style={{ fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.18)', fontWeight: 600 }}>
-            Velora · New Listing
+            By Jessika · New Collection Piece
           </span>
         </div>
         <div style={{

@@ -119,15 +119,10 @@ export const getCartAggregation = async (userId) => {
           }
         },
         currency: {
-          $arrayElemAt: [
-            {
-              $filter: {
-                input: ["$items.price.currency", "$items.product.price.currency", "USD"],
-                as: "c",
-                cond: { $ne: ["$$c", null] }
-              }
-            },
-            0
+          $ifNull: [
+            { $arrayElemAt: ["$items.price.currency", 0] },
+            { $arrayElemAt: ["$items.product.price.currency", 0] },
+            "USD"
           ]
         }
       }

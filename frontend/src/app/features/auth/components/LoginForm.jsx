@@ -306,7 +306,7 @@ const LoginForm = () => {
 
       {/* Google OAuth Link */}
       <a
-        href="/api/auth/google"
+        href="http://localhost:3000/api/auth/google"
         style={{
           display: "flex",
           alignItems: "center",

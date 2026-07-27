@@ -89,7 +89,8 @@ function getScrollParent(node) {
 }
 
 export function AnimatedFooter({
-  headingLines = ["VELORA"],
+  headingLines = ["BY JESSIKA"],
+  tagline = "For the Future She Always Imagined.",
   leftImage = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60",
   rightImage = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60",
   background,
@@ -369,14 +370,14 @@ export function AnimatedFooter({
     <footer
       ref={rootRef}
       className={cn(
-        "relative h-full w-full overflow-hidden min-h-[360px] py-16",
+        "relative h-full w-full overflow-hidden min-h-[380px] py-20 flex flex-col justify-between items-center",
         !background && "bg-[#060606]",
         !textColor && "text-white",
         className
       )}
       style={{ backgroundColor: background || "#060606", color: textColor || "#ffffff", containerType: "inline-size" }}
     >
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-between opacity-40">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-between opacity-30">
         <div
           ref={leftWrapRef}
           className="relative w-2/5 min-w-[200px] will-change-transform"
@@ -393,26 +394,39 @@ export function AnimatedFooter({
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-4 p-8 pointer-events-none">
-        {headingLines.map((word, wi) => (
-          <h2
-            key={`${word}-${wi}`}
-            aria-label={word}
-            className="overflow-hidden font-bold leading-none tracking-tighter pb-[0.15em] -mb-[0.15em]"
-            style={{ fontSize: "clamp(2rem, 13cqw, 9rem)" }}
-          >
-            {Array.from(word).map((ch, ci) => (
-              <span
-                key={ci}
-                data-af-char
-                aria-hidden="true"
-                className="inline-block"
-              >
-                {ch === " " ? "\u00A0" : ch}
-              </span>
-            ))}
-          </h2>
-        ))}
+      <div className="absolute inset-x-0 bottom-6 flex flex-col items-center justify-center gap-3 p-8 pointer-events-none z-10">
+        <div className="flex items-center justify-center gap-4">
+          {headingLines.map((word, wi) => (
+            <h2
+              key={`${word}-${wi}`}
+              aria-label={word}
+              className="overflow-hidden font-['Cormorant_Garamond',serif] font-bold leading-none tracking-[0.15em] pb-[0.1em] text-stone-100"
+              style={{ fontSize: "clamp(2rem, 11cqw, 7.5rem)" }}
+            >
+              {Array.from(word).map((ch, ci) => (
+                <span
+                  key={ci}
+                  data-af-char
+                  aria-hidden="true"
+                  className="inline-block"
+                >
+                  {ch === " " ? "\u00A0" : ch}
+                </span>
+              ))}
+            </h2>
+          ))}
+        </div>
+        
+        {/* Supporting Tagline beneath brand name */}
+        {tagline && (
+          <p className="font-['Inter',sans-serif] italic text-xs md:text-sm font-light text-stone-400 tracking-[0.15em] text-center max-w-md">
+            "{tagline}"
+          </p>
+        )}
+        
+        <p className="text-[10px] text-stone-600 tracking-widest uppercase mt-2">
+          © {new Date().getFullYear()} By Jessika. All Rights Reserved.
+        </p>
       </div>
     </footer>
   );

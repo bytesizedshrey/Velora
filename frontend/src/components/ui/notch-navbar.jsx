@@ -12,7 +12,7 @@ const NavLink = ({ href, icon: Icon, label }) => (
     className="group flex items-center gap-2 text-xs font-semibold text-white/90 hover:text-white transition-all whitespace-nowrap bg-transparent -translate-y-2.5"
   >
     {Icon && <Icon className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100 bg-transparent transition-opacity" />}
-    <span className="bg-transparent">{label}</span>
+    <span className="bg-transparent tracking-wider">{label}</span>
   </Link>
 )
 
@@ -25,17 +25,17 @@ export function NotchNavbar({ className, ...props }) {
 
   const isSeller = user?.role === 'seller'
 
-  const NOTCH_BG = "#141416" // Kinda gray dark charcoal theme
+  const NOTCH_BG = "#141416"
 
-  // Navigation items configuration according to Velora marketplace
+  // Navigation items configuration
   const items = {
     left: [
-      { label: "Marketplace", href: "/", icon: Home },
-      { label: cartCount > 0 ? `Cart (${cartCount})` : "Cart", href: "/cart", icon: ShoppingBag },
-      ...(isSeller ? [{ label: "Studio", href: "/seller/dashboard", icon: LayoutDashboard }] : [])
+      { label: "Collection", href: "/", icon: Home },
+      { label: cartCount > 0 ? `Bag (${cartCount})` : "Bag", href: "/cart", icon: ShoppingBag },
+      ...(isSeller ? [{ label: "Atelier", href: "/seller/dashboard", icon: LayoutDashboard }] : [])
     ],
     right: [
-      ...(isSeller ? [{ label: "Post Product", href: "/seller/create-product", icon: PlusCircle }] : [])
+      ...(isSeller ? [{ label: "New Release", href: "/seller/create-product", icon: PlusCircle }] : [])
     ]
   }
 
@@ -99,12 +99,12 @@ export function NotchNavbar({ className, ...props }) {
                 {isMobileMenuOpen ? <X className="w-5 h-5 bg-transparent" /> : <Menu className="w-5 h-5 bg-transparent" />}
               </button>
 
-              {/* Logo (Center Notch) */}
+              {/* Logo (Center Notch - High Fashion BY JESSIKA) */}
               <div className="flex justify-center shrink-0 mx-2 md:mx-4 bg-transparent -translate-y-2.5">
-                <Link to="/" aria-label="Velora Home" className="flex items-center group bg-transparent">
-                  <div className="w-7 h-7 rounded-lg bg-[#222226] border-t border-[#34343a] border-l border-[#34343a] border-r border-[#101012] border-b border-[#101012] shadow-md shadow-black/50 grid place-items-center text-xs font-bold text-white group-hover:scale-105 transition-transform">
-                    V
-                  </div>
+                <Link to="/" aria-label="By Jessika Home" className="flex items-center gap-2 group bg-transparent">
+                  <span className="font-['Cormorant_Garamond',serif] text-sm md:text-base font-bold tracking-[0.2em] text-white uppercase group-hover:text-stone-300 transition-colors whitespace-nowrap">
+                    BY JESSIKA
+                  </span>
                 </Link>
               </div>
 
@@ -117,10 +117,10 @@ export function NotchNavbar({ className, ...props }) {
                 <div className="flex gap-4 shrink-0 items-center bg-transparent -translate-y-2.5">
                   {user ? (
                     <div className="flex items-center gap-2 px-2 py-1.5 whitespace-nowrap shrink-0 bg-transparent">
-                      <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white/90 uppercase shrink-0">
-                        {user.fullname?.[0] || 'U'}
+                      <div className="w-5 h-5 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center text-[10px] font-bold text-stone-200 uppercase shrink-0">
+                        {user.fullname?.[0] || 'J'}
                       </div>
-                      <span className="text-xs font-semibold text-white/90 tracking-tight shrink-0 bg-transparent">
+                      <span className="text-xs font-medium text-stone-300 tracking-tight shrink-0 bg-transparent">
                         {user.fullname}
                       </span>
                     </div>
@@ -128,15 +128,15 @@ export function NotchNavbar({ className, ...props }) {
                     <>
                       <Link
                         to="/login"
-                        className="text-xs font-medium text-white/70 hover:text-white transition-colors whitespace-nowrap bg-transparent"
+                        className="text-xs font-medium text-stone-400 hover:text-white transition-colors whitespace-nowrap bg-transparent tracking-wider"
                       >
                         Log in
                       </Link>
                       <Link
                         to="/register"
-                        className="px-3.5 py-1.5 text-xs font-semibold text-black bg-white rounded-lg hover:bg-white/90 transition-colors shadow-sm whitespace-nowrap"
+                        className="px-3.5 py-1.5 text-xs font-semibold text-black bg-stone-100 rounded hover:bg-white transition-colors shadow-sm whitespace-nowrap tracking-wider uppercase"
                       >
-                        Sign up
+                        Join
                       </Link>
                     </>
                   )}
@@ -193,7 +193,7 @@ export function NotchNavbar({ className, ...props }) {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <item.icon className="w-5 h-5 opacity-70" />
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-medium tracking-wide">{item.label}</span>
                 </Link>
               ))}
 
@@ -214,7 +214,7 @@ export function NotchNavbar({ className, ...props }) {
                   </Link>
                   <Link
                     to="/register"
-                    className="flex items-center justify-center p-3 rounded-lg bg-white text-black font-semibold mt-1"
+                    className="flex items-center justify-center p-3 rounded-lg bg-white text-black font-semibold mt-1 tracking-wider uppercase"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Sign up

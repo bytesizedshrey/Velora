@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
 import { PixelatedImageTrail } from "../../../components/ui/pixelated-image-trail"
 
-// Abstract dark-luxury Unsplash images used as the trail effect
+// Abstract dark-luxury Unsplash fashion images used as the trail effect
 const TRAIL_IMAGES = [
   "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80",
   "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
@@ -14,10 +14,7 @@ const TRAIL_IMAGES = [
 
 /**
  * LoadingScreen
- * A reusable fullscreen premium loading screen for Velora.
- *
- * @param {boolean} isVisible - Controls whether the screen is shown
- * @param {function} onComplete - Called when the exit animation completes
+ * Reusable fullscreen luxury fashion loading screen for By Jessika.
  */
 const LoadingScreen = ({ isVisible = true, onComplete }) => {
   const overlayRef = useRef(null)
@@ -94,7 +91,7 @@ const LoadingScreen = ({ isVisible = true, onComplete }) => {
   return (
     <div
       ref={overlayRef}
-      aria-label="Loading Velora"
+      aria-label="Loading By Jessika"
       role="status"
       style={{
         position: "fixed",
@@ -127,7 +124,7 @@ const LoadingScreen = ({ isVisible = true, onComplete }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "1.5rem",
+          gap: "1rem",
           pointerEvents: "none",
         }}
       >
@@ -135,34 +132,36 @@ const LoadingScreen = ({ isVisible = true, onComplete }) => {
         <div
           ref={logoRef}
           style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(2rem, 6vw, 4rem)",
-            fontWeight: 700,
-            letterSpacing: "-0.04em",
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
+            fontWeight: 600,
+            letterSpacing: "0.15em",
             color: "#ffffff",
             userSelect: "none",
+            textTransform: "uppercase",
           }}
         >
-          VELORA
+          BY JESSIKA
         </div>
 
-        {/* Subtitle */}
+        {/* Tagline */}
         <p
           ref={wordRef}
           style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "0.75rem",
-            fontWeight: 400,
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "var(--color-text-muted)",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.85rem",
+            fontStyle: "italic",
+            fontWeight: 300,
+            letterSpacing: "0.08em",
+            color: "rgba(255, 255, 255, 0.7)",
+            margin: 0,
           }}
         >
-          Premium Marketplace
+          For the Future She Always Imagined.
         </p>
 
         {/* Loading dots */}
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "1rem" }}>
           {[0, 1, 2].map((i) => (
             <div
               key={i}
@@ -171,7 +170,7 @@ const LoadingScreen = ({ isVisible = true, onComplete }) => {
                 width: 5,
                 height: 5,
                 borderRadius: "50%",
-                backgroundColor: "var(--color-accent)",
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
               }}
             />
           ))}

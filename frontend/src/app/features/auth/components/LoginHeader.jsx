@@ -1,10 +1,40 @@
+import React from "react"
+
 /**
  * LoginHeader
- * Displays the eyebrow tag, heading, and subtitle for the Login page.
+ * Displays the brand, eyebrow tag, heading, tagline, and subtitle for the Login page.
  */
 const LoginHeader = () => {
   return (
     <div style={{ marginBottom: "1rem" }}>
+      {/* Brand logo & tagline display */}
+      <div style={{ marginBottom: "1.25rem" }}>
+        <h2
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "1.6rem",
+            fontWeight: 600,
+            letterSpacing: "0.15em",
+            color: "#ffffff",
+            margin: "0 0 2px 0",
+            textTransform: "uppercase",
+          }}
+        >
+          By Jessika
+        </h2>
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.75rem",
+            fontStyle: "italic",
+            color: "rgba(255, 255, 255, 0.5)",
+            margin: 0,
+            letterSpacing: "0.05em",
+          }}
+        >
+          For the Future She Always Imagined.
+        </p>
+      </div>
 
       {/* Eyebrow tag */}
       <div
@@ -73,7 +103,7 @@ const LoginHeader = () => {
           maxWidth: "34ch",
         }}
       >
-        Enter your credentials to access your Velora account.
+        Enter your credentials to access your By Jessika account.
       </p>
     </div>
   )

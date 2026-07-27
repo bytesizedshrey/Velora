@@ -30,9 +30,12 @@ export const createPaymentOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid cart total amount" });
     }
 
-    // Convert amount to paise for INR (or smallest currency sub-unit)
+    // Normalize currency string (handling array or missing values)
+    const rawCurrency = cart.currency;
+    let currency = (Array.isArray(rawCurrency) ? rawCurrency[0] : rawCurrency) || "USD";
+
+    // Convert amount to paise (for INR/USD smallest subunit)
     const amountInPaise = Math.round(serverTotal * 100);
-    const currency = cart.currency || "INR";
 
     console.log("💳 [Razorpay Create Order] Server Calculated Amount:", {
       userId: userId.toString(),
@@ -44,11 +47,11 @@ export const createPaymentOrder = async (req, res) => {
 
     let razorpayOrderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    // 3. Attempt to create order via Razorpay SDK
+    // 3. Attempt to create order via Razorpay SDK (Try INR if USD unsupported on test account)
     try {
       const rzpOrder = await razorpayInstance.orders.create({
         amount: amountInPaise,
-        currency,
+        currency: "INR",
         receipt: `rcpt_${Date.now()}`,
         notes: {
           userId: userId.toString(),
@@ -69,7 +72,7 @@ export const createPaymentOrder = async (req, res) => {
       quantity: item.quantity || 1,
       price: {
         amount: item.price?.amount || item.product?.price?.amount || 0,
-        currency: item.price?.currency || item.product?.price?.currency || currency,
+        currency: (Array.isArray(item.price?.currency) ? item.price.currency[0] : item.price?.currency) || currency,
       },
     }));
 
@@ -77,7 +80,7 @@ export const createPaymentOrder = async (req, res) => {
       user: userId,
       items: orderItems,
       totalAmount: serverTotal,
-      currency,
+      currency: typeof currency === 'string' ? currency : 'USD',
       status: "pending",
       razorpayOrderId,
     });
@@ -88,7 +91,7 @@ export const createPaymentOrder = async (req, res) => {
       order: newOrder._id,
       razorpayOrderId,
       amount: serverTotal,
-      currency,
+      currency: typeof currency === 'string' ? currency : 'USD',
       status: "pending",
     });
 
@@ -107,7 +110,7 @@ export const createPaymentOrder = async (req, res) => {
       orderId: newOrder._id,
       razorpayOrderId,
       amount: amountInPaise,
-      currency,
+      currency: "INR",
       key: config.RAZORPAY_KEY_ID,
     });
   } catch (err) {

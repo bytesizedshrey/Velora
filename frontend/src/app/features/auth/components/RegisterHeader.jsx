@@ -1,11 +1,40 @@
+import React from "react"
+
 /**
  * RegisterHeader
- * Displays the eyebrow tag, heading, and subtitle.
- * Elements start visible. GSAP sets initial opacity in Register.jsx.
+ * Displays the brand, eyebrow tag, heading, tagline, and subtitle.
  */
 const RegisterHeader = () => {
   return (
     <div style={{ marginBottom: "1rem" }}>
+      {/* Brand logo & tagline display */}
+      <div style={{ marginBottom: "1.25rem" }}>
+        <h2
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "1.6rem",
+            fontWeight: 600,
+            letterSpacing: "0.15em",
+            color: "#ffffff",
+            margin: "0 0 2px 0",
+            textTransform: "uppercase",
+          }}
+        >
+          By Jessika
+        </h2>
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.75rem",
+            fontStyle: "italic",
+            color: "rgba(255, 255, 255, 0.5)",
+            margin: 0,
+            letterSpacing: "0.05em",
+          }}
+        >
+          For the Future She Always Imagined.
+        </p>
+      </div>
 
       {/* Eyebrow tag */}
       <div
@@ -58,7 +87,7 @@ const RegisterHeader = () => {
           Join&nbsp;
         </span>
         <span className="register-heading-word" style={{ display: "inline-block" }}>
-          Velora.
+          By Jessika.
         </span>
       </h1>
 
@@ -74,7 +103,7 @@ const RegisterHeader = () => {
           maxWidth: "34ch",
         }}
       >
-        A premium C2C marketplace. Buy & sell beautifully.
+        Step into luxury high fashion designed for her future.
       </p>
     </div>
   )

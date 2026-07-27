@@ -288,13 +288,14 @@ const Dashboard = () => {
               V
             </div>
             <span style={{
-              fontFamily: 'Geist, system-ui',
-              fontSize: '0.95rem',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: '1rem',
+              fontWeight: 600,
+              letterSpacing: '0.12em',
               color: '#ffffff',
+              textTransform: 'uppercase',
             }}>
-              Velora
+              By Jessika
             </span>
           </Link>
           <span style={{ color: '#1a1a1a', fontSize: '0.8rem' }}>/</span>
@@ -628,7 +629,7 @@ const Dashboard = () => {
                 {searchQuery ? 'No matching products found' : 'No products listed yet'}
               </h3>
               <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.25)', marginTop: 4, maxWidth: 360 }}>
-                {searchQuery ? 'Try adjusting your search terms or filters.' : 'Create your first product listing to start selling on Velora.'}
+                {searchQuery ? 'Try adjusting your search terms or filters.' : 'Create your first product listing to start selling on By Jessika.'}
               </p>
             </div>
             {!searchQuery && (

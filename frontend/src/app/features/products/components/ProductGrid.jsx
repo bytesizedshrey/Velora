@@ -19,7 +19,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-        gap: 16,
+        gap: 24,
       }}
     >
       {products.map((product) => {
@@ -30,38 +30,38 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
             key={product._id}
             onClick={() => handleProductClick(product)}
             style={{
-              borderRadius: 14,
-              background: '#0e0e0e',
-              borderTop: '1px solid #222222',
-              borderLeft: '1px solid #222222',
-              borderRight: '1px solid #060606',
-              borderBottom: '1px solid #060606',
-              boxShadow: '0 6px 20px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)',
+              borderRadius: 20,
+              background: 'linear-gradient(180deg, #101012 0%, #080809 100%)',
+              borderTop: '1px solid #242428',
+              borderLeft: '1px solid #242428',
+              borderRight: '1px solid #050505',
+              borderBottom: '1px solid #050505',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06)',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               cursor: 'pointer',
-              transition: 'transform 0.2s, box-shadow 0.2s',
+              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-3px)'
+              e.currentTarget.style.transform = 'translateY(-4px)'
               e.currentTarget.style.boxShadow =
-                '0 10px 28px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.5)'
+                '0 16px 40px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.12)'
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'none'
               e.currentTarget.style.boxShadow =
-                '0 6px 20px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)'
+                '0 8px 24px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06)'
             }}
           >
+            {/* Image Container with Luxury 4/5 Aspect Ratio */}
             <div
               style={{
                 position: 'relative',
-                aspectRatio: '16/10',
-                background: '#060606',
+                aspectRatio: '4/5',
+                background: '#040404',
                 overflow: 'hidden',
-                borderBottom: '1px solid #0c0c0c',
-                boxShadow: 'inset 0 3px 8px rgba(0,0,0,0.7)',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
               }}
             >
               <img
@@ -71,50 +71,47 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  transition: 'transform 0.3s cubic-bezier(0.16,1,0.3,1)',
+                  transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
               />
 
+              {/* High Fashion Price Badge */}
               <div
                 style={{
                   position: 'absolute',
-                  bottom: 8,
-                  right: 8,
-                  padding: '4px 10px',
-                  borderRadius: 7,
-                  background: 'rgba(8,8,8,0.92)',
-                  borderTop: '1px solid #2a2a2a',
-                  borderLeft: '1px solid #2a2a2a',
-                  borderRight: '1px solid #080808',
-                  borderBottom: '1px solid #080808',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.6)',
-                  backdropFilter: 'blur(6px)',
+                  bottom: 12,
+                  right: 12,
+                  padding: '6px 12px',
+                  borderRadius: 10,
+                  background: 'rgba(10, 10, 12, 0.88)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.8)',
+                  backdropFilter: 'blur(8px)',
                   fontSize: '0.8rem',
-                  fontFamily: 'Geist, system-ui',
+                  fontFamily: "'Inter', sans-serif",
                   fontWeight: 700,
+                  letterSpacing: '0.04em',
                   color: '#ffffff',
                 }}
               >
-                {product.price?.currency || 'INR'}{' '}
-                {Number(product.price?.amount || 0).toLocaleString('en-IN')}
+                {product.price?.currency || 'USD'}{' '}
+                {Number(product.price?.amount || 0).toLocaleString('en-US')}
               </div>
 
               {product.images?.length > 1 && (
                 <div
                   style={{
                     position: 'absolute',
-                    top: 8,
-                    left: 8,
-                    padding: '2px 7px',
-                    borderRadius: 5,
-                    background: 'rgba(8,8,8,0.85)',
-                    borderTop: '1px solid #262626',
-                    borderLeft: '1px solid #262626',
-                    borderRight: '1px solid #080808',
-                    borderBottom: '1px solid #080808',
-                    fontSize: '0.58rem',
-                    color: 'rgba(255,255,255,0.6)',
-                    fontWeight: 600,
+                    top: 12,
+                    left: 12,
+                    padding: '3px 8px',
+                    borderRadius: 6,
+                    background: 'rgba(10, 10, 12, 0.8)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    fontSize: '0.62rem',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontWeight: 500,
+                    letterSpacing: '0.05em',
                   }}
                 >
                   {product.images.length} photos
@@ -122,37 +119,39 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
               )}
             </div>
 
+            {/* Card Content */}
             <div
               style={{
-                padding: '14px 16px',
+                padding: '18px 20px',
                 display: 'flex',
                 flexDirection: 'column',
                 flex: 1,
                 justifyContent: 'space-between',
-                gap: 10,
+                gap: 12,
               }}
             >
               <div>
                 <h4
                   style={{
-                    fontFamily: 'Geist, system-ui',
-                    fontSize: '0.95rem',
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '1rem',
                     fontWeight: 600,
                     color: '#ffffff',
                     lineHeight: 1.3,
-                    marginBottom: 4,
+                    marginBottom: 6,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
+                    letterSpacing: '-0.01em',
                   }}
                 >
                   {product.title}
                 </h4>
                 <p
                   style={{
-                    fontSize: '0.78rem',
-                    color: 'rgba(255,255,255,0.3)',
-                    lineHeight: 1.4,
+                    fontSize: '0.8rem',
+                    color: 'rgba(255, 255, 255, 0.45)',
+                    lineHeight: 1.45,
                     display: '-webkit-box',
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
@@ -168,25 +167,26 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  paddingTop: 10,
-                  borderTop: '1px solid #121212',
+                  paddingTop: 12,
+                  borderTop: '1px solid rgba(255,255,255,0.06)',
                 }}
               >
-                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', fontWeight: 500 }}>
-                  {product.seller?.fullname || 'Verified Seller'}
+                <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+                  {product.seller?.fullname || 'By Jessika Atelier'}
                 </div>
                 <span
                   style={{
-                    fontSize: '0.62rem',
-                    color: 'rgba(212,212,212,0.6)',
+                    fontSize: '0.68rem',
+                    color: '#ffffff',
+                    fontWeight: 600,
                     letterSpacing: '0.06em',
-                    background: '#141414',
-                    padding: '2px 8px',
-                    borderRadius: 5,
-                    border: '1px solid #222222',
+                    background: 'linear-gradient(180deg, #222226 0%, #121214 100%)',
+                    padding: '4px 10px',
+                    borderRadius: 8,
+                    border: '1px solid rgba(255,255,255,0.12)',
                   }}
                 >
-                  View Item →
+                  View Piece →
                 </span>
               </div>
             </div>

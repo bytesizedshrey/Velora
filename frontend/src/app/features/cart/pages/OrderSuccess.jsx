@@ -8,7 +8,7 @@ export default function OrderSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const orderId = searchParams.get("order_id") || searchParams.get("orderId") || "VEL-ORDER-" + Date.now();
+  const orderId = searchParams.get("order_id") || searchParams.get("orderId") || "BJ-ORDER-" + Date.now();
   const paymentId = searchParams.get("payment_id") || searchParams.get("paymentId") || null;
 
   return (
@@ -58,11 +58,28 @@ export default function OrderSuccess() {
           </svg>
         </div>
 
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 8px 0", letterSpacing: "-0.02em" }}>
+        <h2
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "1.8rem",
+            fontWeight: 600,
+            letterSpacing: "0.15em",
+            color: "#ffffff",
+            margin: "0 0 4px 0",
+            textTransform: "uppercase",
+          }}
+        >
+          BY JESSIKA
+        </h2>
+        <p style={{ fontSize: "0.8rem", fontStyle: "italic", color: "rgba(255,255,255,0.5)", margin: "0 0 20px 0" }}>
+          For the Future She Always Imagined.
+        </p>
+
+        <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 8px 0", letterSpacing: "-0.02em" }}>
           PAYMENT SUCCESSFUL!
         </h1>
         <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", margin: "0 0 28px 0", lineHeight: 1.6 }}>
-          Thank you for your order with Velora. Your payment has been verified and your order is being processed.
+          Thank you for your order with By Jessika. Your payment has been verified and your order is being processed.
         </p>
 
         {/* Order Details Card */}
@@ -113,7 +130,7 @@ export default function OrderSuccess() {
             transition: "all 0.15s ease",
           }}
         >
-          Continue Shopping
+          Explore Collection
         </button>
       </div>
     </div>

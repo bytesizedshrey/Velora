@@ -1,61 +1,50 @@
-import jwt from "jsonwebtoken";
 import userModel from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
-async function sendTokenResponse(user, res, message, statusCode = 200) {
-    const token = jwt.sign({
-        id: user._id
-    }, config.JWT_SECRET, {
-        expiresIn: "7d"
-    })
-
-    res.cookie("token", token, {
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    })
-
-    return res.status(statusCode).json({
-        message,
-        success: true,
-        user: {
-            id: user._id,
-            email: user.email,
-            contact: user.contact,
-            fullname: user.fullname,
-            role: user.role
-        }
-    })
-}
-
 export const register = async (req, res) => {
-    const { email, contact, password, fullname, role,isSeller } = req.body
-
     try {
-        const existingUser = await userModel.findOne({
-            $or: [
-                { email },
-                { contact }
-            ]
-        })
+        const { email, password, fullname, role } = req.body
 
-        if (existingUser) {
-            return res.status(400).json({ message: "User with this email or contact already exists" })
+        if (!email || !password || !fullname) {
+            return res.status(400).json({ message: "All fields are required" })
         }
+
+        const isUserExists = await userModel.findOne({ email })
+
+        if (isUserExists) {
+            return res.status(400).json({ message: "User already exists" })
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10)
 
         const user = await userModel.create({
             email,
-            contact,
-            password,
+            password: hashedPassword,
             fullname,
-            role: isSeller ? "seller" : "buyer"
+            role: role || "buyer"
         })
 
-        return await sendTokenResponse(user, res, "User registered successfully.", 201)
+        const token = jwt.sign({
+            id: user._id,
+        }, config.JWT_SECRET, {
+            expiresIn: "7d"
+        })
 
+        res.cookie("token", token)
+
+        return res.status(201).json({
+            message: "User registered successfully",
+            user: {
+                _id: user._id,
+                email: user.email,
+                fullname: user.fullname,
+                role: user.role
+            }
+        })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: "Server error" })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -63,22 +52,41 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body
 
+        if (!email || !password) {
+            return res.status(400).json({ message: "All fields are required" })
+        }
+
         const user = await userModel.findOne({ email })
 
         if (!user) {
-            return res.status(400).json({ message: "Invalid email or password", success: false })
+            return res.status(400).json({ message: "Invalid email or password" })
         }
 
-        const isMatch = await user.comparePassword(password)
+        const isPasswordMatch = await bcrypt.compare(password, user.password)
 
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid email or password", success: false })
+        if (!isPasswordMatch) {
+            return res.status(400).json({ message: "Invalid email or password" })
         }
 
-        return await sendTokenResponse(user, res, "user logged successfully")
+        const token = jwt.sign({
+            id: user._id,
+        }, config.JWT_SECRET, {
+            expiresIn: "7d"
+        })
+
+        res.cookie("token", token)
+
+        return res.status(200).json({
+            message: "User logged in successfully",
+            user: {
+                _id: user._id,
+                email: user.email,
+                fullname: user.fullname,
+                role: user.role
+            }
+        })
     } catch (error) {
-        console.error("Error in login controller:", error);
-        return res.status(500).json({ message: "Server error", success: false });
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -95,6 +103,9 @@ export const googleCallback = async (req, res) => {
                 googleId: id,
                 fullname: displayName
             })
+        } else if (!user.googleId) {
+            user.googleId = id
+            await user.save()
         }
 
         const token = jwt.sign({
@@ -103,33 +114,29 @@ export const googleCallback = async (req, res) => {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token)
-        res.redirect("http://localhost:5173/dashboard")
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax"
+        })
+
+        const targetFrontend = process.env.FRONTEND_URL || "http://localhost:5173"
+        res.redirect(targetFrontend)
     } catch (error) {
         console.error("Error in googleCallback:", error);
-        res.redirect("http://localhost:5173/login")
+        const targetFrontend = process.env.FRONTEND_URL || "http://localhost:5173"
+        res.redirect(`${targetFrontend}/login`)
     }
 }
 
 export const getMe = async (req, res) => {
     try {
-        const user = req.user
+        const user = await userModel.findById(req.user._id).select("-password")
         if (!user) {
-            return res.status(401).json({ message: "Unauthorized", success: false });
+            return res.status(404).json({ message: "User not found" })
         }
-        res.status(200).json({
-            message: "User Fetched Successfully",
-            success: true,
-            user: {
-                id: user._id,
-                email: user.email,
-                contact: user.contact,
-                fullname: user.fullname,
-                role: user.role
-            }
-        })
+        return res.status(200).json({ user })
     } catch (error) {
-        console.error("Error in getMe controller:", error);
-        return res.status(500).json({ message: "Server error", success: false });
+        return res.status(500).json({ message: error.message })
     }
 }

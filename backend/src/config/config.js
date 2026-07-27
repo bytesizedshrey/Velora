@@ -15,6 +15,6 @@ export const config = {
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     NODE_ENV: process.env.NODE_ENV || "development",
     IMAGE_PRIVATE_KEY: process.env.IMAGE_PRIVATE_KEY,
-    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "rzp_test_VeloraStoreKey",
-    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || "VeloraSecretKey1234567890"
+    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "rzp_test_TIbDToJOUh51jm",
+    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || "WkbBdMbaxLkt528iYxJcddEx"
 };
