@@ -1,81 +1,56 @@
 import productModel from "../models/product.model.js";
 import { uploadFile } from "../services/storage.service.js";
+import mongoose from "mongoose";
 
 /**
  * Helper to ensure a product has at least one valid variant in `variants`
  */
-const ensureProductVariants = async (product) => {
+const ensureProductVariants = (product) => {
     if (!product) return product;
 
-    if ((!product.variants || product.variants.length === 0) && product.varients && product.varients.length > 0) {
-        product.variants = product.varients;
+    const doc = product.toObject ? product.toObject() : product;
+
+    if ((!doc.variants || doc.variants.length === 0) && doc.varients && doc.varients.length > 0) {
+        doc.variants = doc.varients;
     }
 
-    const docImages = product.images || [];
-    const existingVariants = product.variants || [];
+    const docImages = doc.images || [];
+    const existingVariants = doc.variants || [];
 
-    if (existingVariants.length === 0 || (existingVariants.length <= 1 && docImages.length > 1)) {
+    if (existingVariants.length === 0) {
         let newVariants = [];
 
-        if (docImages.length > 1) {
+        if (docImages.length > 0) {
             newVariants = docImages.map((imgObj, i) => {
-                const urlStr = String(imgObj?.url || imgObj || '').toLowerCase();
-                const altStr = String(imgObj?.alt || '').toLowerCase();
-
-                let title = `Variant ${i + 1}`;
-                let color = i % 2 === 0 ? "Black" : "White";
-
-                if (urlStr.includes("white") || altStr.includes("white") || urlStr.includes("02") || urlStr.includes("g2")) {
-                    title = "White T-Shirt";
-                    color = "White";
-                } else if (urlStr.includes("hoodie") || altStr.includes("hoodie") || i === 0) {
-                    title = "Black Hoodie";
-                    color = "Black";
-                } else if (urlStr.includes("boxy") || altStr.includes("boxy") || i === 2) {
-                    title = "Black Boxy Tee";
-                    color = "Black";
-                }
-
-                const baseAmount = Number(product.price?.amount || 200);
-                const priceAmount = i === 1 ? Math.max(10, baseAmount - 10) : i === 2 ? Math.max(10, baseAmount - 20) : baseAmount;
-
+                const baseAmount = Number(doc.price?.amount || 200);
                 return {
-                    _id: new mongoose.Types.ObjectId(),
-                    title,
+                    _id: imgObj._id || new mongoose.Types.ObjectId(),
+                    title: doc.title || `Variant ${i + 1}`,
                     images: [imgObj],
                     stock: 100 - (i * 15),
                     attributes: {
-                        Color: color,
-                        Style: title
+                        Style: `Variant ${i + 1}`
                     },
                     price: {
-                        amount: priceAmount,
-                        currency: product.price?.currency || "USD"
+                        amount: baseAmount,
+                        currency: doc.price?.currency || "USD"
                     }
                 };
             });
         } else {
-            const defaultImages = docImages.length > 0
-                ? docImages
-                : [{ url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", alt: product.title || "Product Image" }];
-
             newVariants = [{
-                _id: product._id || new mongoose.Types.ObjectId(),
+                _id: doc._id || new mongoose.Types.ObjectId(),
                 title: "Standard",
-                images: defaultImages,
-                stock: product.stock || 100,
+                images: [{ url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", alt: doc.title || "Product Image" }],
+                stock: doc.stock || 100,
                 attributes: { Style: "Standard" },
-                price: product.price || { amount: 200, currency: "USD" }
+                price: doc.price || { amount: 200, currency: "USD" }
             }];
         }
 
-        product.variants = newVariants;
-        await productModel.collection.updateOne(
-            { _id: product._id },
-            { $set: { variants: newVariants } }
-        );
+        doc.variants = newVariants;
     }
-    return product;
+    return doc;
 };
 
 export const createProduct = async (req, res) => {
@@ -119,10 +94,9 @@ export const createProduct = async (req, res) => {
         const productStock = stock !== undefined && stock !== null && stock !== "" ? Number(stock) : 100;
         const basePrice = {
             amount: Number(priceAmount || 0),
-            currency: priceCurrency || "INR"
+            currency: priceCurrency || "USD"
         };
 
-        // Parse optional custom variants array passed in body
         let parsedVariants = [];
         if (req.body.variants) {
             try {
@@ -135,11 +109,10 @@ export const createProduct = async (req, res) => {
         let finalVariants = [];
         if (Array.isArray(parsedVariants) && parsedVariants.length > 0) {
             finalVariants = parsedVariants.map((v, i) => {
-                // Prefer explicit image slice via imageStartIndex/imageCount (sent by CreateProduct)
                 let varImages;
                 if (v.imageStartIndex !== undefined && v.imageCount !== undefined && v.imageCount > 0) {
                     varImages = uploadedImages.slice(v.imageStartIndex, v.imageStartIndex + v.imageCount);
-                    if (varImages.length === 0) varImages = uploadedImages; // fallback
+                    if (varImages.length === 0) varImages = uploadedImages;
                 } else if (v.images && v.images.length > 0) {
                     varImages = v.images;
                 } else {
@@ -159,7 +132,6 @@ export const createProduct = async (req, res) => {
                 };
             });
         } else {
-            // Default single variant using all uploaded images & stock
             finalVariants = [{
                 title: "Standard",
                 images: uploadedImages,
@@ -197,10 +169,8 @@ export async function getSellerProducts(req, res) {
             return res.status(401).json({ message: "Unauthorized", success: false });
         }
 
-        let products = await productModel.find({ seller: seller._id });
-        
-        // Ensure all seller products have variants
-        products = await Promise.all(products.map(p => ensureProductVariants(p)));
+        let products = await productModel.find({ seller: seller._id }).lean();
+        products = products.map(p => ensureProductVariants(p));
 
         return res.status(200).json({
             message: "Products fetched successfully",
@@ -217,10 +187,10 @@ export async function getAllProducts(req, res) {
     try {
         let products = await productModel.find()
             .populate('seller', 'fullname email')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean();
 
-        // Ensure all products have variants
-        products = await Promise.all(products.map(p => ensureProductVariants(p)));
+        products = products.map(p => ensureProductVariants(p));
 
         return res.status(200).json({
             message: "Products fetched successfully",
@@ -236,12 +206,12 @@ export async function getAllProducts(req, res) {
 export async function getProductById(req, res) {
     try {
         const { id } = req.params;
-        let product = await productModel.findById(id).populate('seller', 'fullname email');
+        let product = await productModel.findById(id).populate('seller', 'fullname email').lean();
         if (!product) {
             return res.status(404).json({ message: "Product not found", success: false });
         }
 
-        product = await ensureProductVariants(product);
+        product = ensureProductVariants(product);
 
         return res.status(200).json({
             message: "Product fetched successfully",
@@ -257,7 +227,7 @@ export async function getProductById(req, res) {
 export async function getProductDetails(req, res) {
     try {
         const { id } = req.params;
-        let product = await productModel.findById(id);
+        let product = await productModel.findById(id).lean();
 
         if (!product) {
             return res.status(404).json({
@@ -266,7 +236,7 @@ export async function getProductDetails(req, res) {
             });
         }
 
-        product = await ensureProductVariants(product);
+        product = ensureProductVariants(product);
 
         return res.status(200).json({
             message: "Product details fetched successfully",
@@ -330,7 +300,7 @@ export async function addProductVariant(req, res) {
         }
 
         const priceAmount = Number(req.body.priceAmount || req.body.price || product.price?.amount || 0);
-        const priceCurrency = req.body.priceCurrency || product.price?.currency || "INR";
+        const priceCurrency = req.body.priceCurrency || product.price?.currency || "USD";
         const stock = Number(req.body.stock || 100);
         const title = req.body.title || `Variant ${(product.variants?.length || 0) + 1}`;
 
