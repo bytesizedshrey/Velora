@@ -4,9 +4,8 @@ import mongoose from "mongoose";
 
 /**
  * Automatic Database Migration for Product Variants & Cart Cleanup
- * 1. Unsets and removes legacy misspelled field `varients` from all documents in MongoDB.
- * 2. Rewrites all product documents to contain 3 distinct variant objects in `variants` array.
- * 3. Migrates stale cart item variant IDs to point to valid active variant IDs in products collection.
+ * 1. Unsets legacy misspelled field `varients` from all documents in MongoDB.
+ * 2. Ensures existing products have a valid `variants` array matching real seller data without injecting static/mock attributes.
  */
 export const runAutoMigration = async () => {
   try {
@@ -23,53 +22,47 @@ export const runAutoMigration = async () => {
     let migratedCount = 0;
 
     for (const doc of rawProducts) {
-      const docImages = doc.images || [];
-
-      // Always populate multi-variant array if <= 1 variant or if images exist
-      if (docImages.length > 1 || !doc.variants || doc.variants.length <= 1) {
-        const newVariants = docImages.map((imgObj, i) => {
-          const urlStr = String(imgObj?.url || imgObj || '').toLowerCase();
-          const altStr = String(imgObj?.alt || '').toLowerCase();
-
-          let title = `Variant ${i + 1}`;
-          let color = i % 2 === 0 ? "Black" : "White";
-
-          if (urlStr.includes("white") || altStr.includes("white") || urlStr.includes("02") || urlStr.includes("g2")) {
-            title = "White T-Shirt";
-            color = "White";
-          } else if (urlStr.includes("hoodie") || altStr.includes("hoodie") || i === 0) {
-            title = "Black Hoodie";
-            color = "Black";
-          } else if (urlStr.includes("boxy") || altStr.includes("boxy") || i === 2) {
-            title = "Black Boxy Tee";
-            color = "Black";
+      // Clean up any mock static values injected in earlier iterations ("White T-Shirt", "Black Hoodie", fake Color attributes)
+      if (doc.variants && doc.variants.length > 0) {
+        let cleaned = false;
+        const cleanedVariants = doc.variants.map((v, i) => {
+          const vAttr = v.attributes || {};
+          if (vAttr.Color === "White" || vAttr.Color === "Black" || v.title === "White T-Shirt" || v.title === "Black Hoodie" || v.title === "Black Boxy Tee") {
+            cleaned = true;
+            return {
+              ...v,
+              title: (v.title === "White T-Shirt" || v.title === "Black Hoodie" || v.title === "Black Boxy Tee") ? (doc.title || `Style ${i + 1}`) : v.title,
+              attributes: {}
+            };
           }
-
-          const baseAmount = Number(doc.price?.amount || 200);
-          const priceAmount = i === 1 ? Math.max(10, baseAmount - 10) : i === 2 ? Math.max(10, baseAmount - 20) : baseAmount;
-
-          return {
-            _id: new mongoose.Types.ObjectId(),
-            title,
-            images: [imgObj],
-            stock: 100 - (i * 15),
-            attributes: {
-              Color: color,
-              Style: title
-            },
-            price: {
-              amount: priceAmount,
-              currency: doc.price?.currency || "USD"
-            },
-            createdAt: new Date(),
-            updatedAt: new Date()
-          };
+          return v;
         });
+
+        if (cleaned) {
+          await collection.updateOne(
+            { _id: doc._id },
+            { $set: { variants: cleanedVariants } }
+          );
+          migratedCount++;
+        }
+      } else {
+        const defaultImages = (doc.images && doc.images.length > 0)
+          ? doc.images
+          : [{ url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", alt: doc.title || "Product Image" }];
+
+        const defaultVariant = {
+          _id: doc._id || new mongoose.Types.ObjectId(),
+          title: doc.title || "Standard",
+          images: defaultImages,
+          stock: doc.stock || 100,
+          attributes: {},
+          price: doc.price || { amount: 200, currency: "USD" }
+        };
 
         await collection.updateOne(
           { _id: doc._id },
           { 
-            $set: { variants: newVariants },
+            $set: { variants: [defaultVariant] },
             $unset: { varients: 1 }
           }
         );
@@ -112,7 +105,7 @@ export const runAutoMigration = async () => {
     }
 
     if (migratedCount > 0 || updatedCartCount > 0) {
-      console.log(`✅ Migration complete: ${migratedCount} product(s) and ${updatedCartCount} cart(s) updated in MongoDB.`);
+      console.log(`✅ Cleaned static values: ${migratedCount} product(s) and ${updatedCartCount} cart(s) updated in MongoDB.`);
     } else {
       console.log("✨ All products and carts in MongoDB are clean and synchronized.");
     }

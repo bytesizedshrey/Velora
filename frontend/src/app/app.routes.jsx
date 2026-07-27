@@ -7,6 +7,7 @@ import CreateProduct from "./features/products/pages/CreateProduct";
 import Dashboard from "./features/products/pages/Dashboard";
 import ProductDetail from "./features/products/pages/ProductDetail";
 import Cart from "./features/cart/pages/Cart";
+import OrderSuccess from "./features/cart/pages/OrderSuccess";
 
 import Protected from "./features/auth/components/Protected";
 import useLenis from "../shared/hooks/useLenis";
@@ -61,6 +62,10 @@ export const routes = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "order-success",
+        element: <OrderSuccess />,
       },
       {
         path: "register",

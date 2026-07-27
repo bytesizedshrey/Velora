@@ -3,8 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
-        items: [],
         cart: null,
+        items: [],
+        totalPrice: null,
+        currency: null,
         loading: false,
         error: null,
     },
@@ -21,6 +23,9 @@ const cartSlice = createSlice({
                 state.cart = action.payload
                 state.items = action.payload.items
             } else if (action.payload) {
+                if (!Array.isArray(state.items)) {
+                    state.items = []
+                }
                 state.items.push(action.payload)
             }
         },

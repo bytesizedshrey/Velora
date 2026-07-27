@@ -222,13 +222,13 @@ export default function ProductDetail({ productData = null, loadingState = null,
               : {})
           : {}
         return Object.entries(newAttrs).every(([k, vVal]) => {
-          if (!vAttr[k]) return true
+          if (!vAttr[k]) return false
           return String(vAttr[k]).toLowerCase() === String(vVal).toLowerCase()
         })
       })
       if (matchIdx !== -1) {
         setSelectedVariantIdx(matchIdx)
-        setActiveImg(0)   // reset to first image of newly selected variant
+        setActiveImg(0)
       }
     }
   }
@@ -236,11 +236,10 @@ export default function ProductDetail({ productData = null, loadingState = null,
   const handleAddToCartAsync = async () => {
     if (!product) return
     const list = product?.variants || product?.varients || []
-    const targetVariantId = activeVariant?._id
-      || list[selectedVariantIdx]?._id
-      || list[0]?._id
-      || product._id
-      || productId
+    
+    // Explicitly target the selected variant object
+    const selectedVariant = list[selectedVariantIdx] || activeVariant || list[0]
+    const targetVariantId = selectedVariant?._id || product._id || productId
 
     if (!targetVariantId) {
       setCartMessage({ text: 'Unable to identify product variant.', isError: true })
@@ -257,7 +256,8 @@ export default function ProductDetail({ productData = null, loadingState = null,
         quantity: qty
       })
       if (res?.success !== false) {
-        setCartMessage({ text: `Added ${qty}x "${product.title}" to cart successfully!`, isError: false })
+        const variantTitle = selectedVariant?.title ? ` (${selectedVariant.title})` : ''
+        setCartMessage({ text: `Added ${qty}x "${product.title}${variantTitle}" to cart!`, isError: false })
       } else {
         setCartMessage({ text: res.message || 'Failed to add item to cart', isError: true })
       }

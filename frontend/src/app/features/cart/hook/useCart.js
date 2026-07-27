@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { addItem, getCart, updateCartItem, removeCartItem } from "../service/cart.api"
+import { createPaymentOrder, verifyPaymentOrder } from "../service/payment.api"
 import { setCart, setLoading, setError } from "../state/cart.slice"
 
 export const useCart = () => {
@@ -75,6 +76,41 @@ export const useCart = () => {
         }
     }
 
+    async function handleIncrementCartItem({ productId, variantId }) {
+        return handleAddItem({ productId, variantId, quantity: 1 })
+    }
+
+    async function handleCreateCartOrder() {
+        try {
+            dispatch(setLoading(true))
+            const data = await createPaymentOrder()
+            return data
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || err.message || "Failed to create payment order"
+            dispatch(setError(errorMsg))
+            throw err
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
+    async function handleVerifyCartOrder(payload) {
+        try {
+            dispatch(setLoading(true))
+            const data = await verifyPaymentOrder(payload)
+            if (data?.success) {
+                dispatch(setCart({ items: [] }))
+            }
+            return data
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || err.message || "Payment verification failed"
+            dispatch(setError(errorMsg))
+            throw err
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
     return {
         cart: cartState?.cart,
         items: cartState?.items || [],
@@ -83,6 +119,9 @@ export const useCart = () => {
         handleAddItem,
         handleGetCart,
         handleUpdateQuantity,
-        handleRemoveItem
+        handleRemoveItem,
+        handleIncrementCartItem,
+        handleCreateCartOrder,
+        handleVerifyCartOrder
     }
 }
