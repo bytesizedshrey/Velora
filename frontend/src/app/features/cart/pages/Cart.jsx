@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router'
 import { useCart } from '../hook/useCart'
 import { DEFAULT_PRODUCT_IMAGE } from '../../products/utils/constants'
@@ -7,8 +8,12 @@ const NOTCH_H = 64
 const TOP_PAD = NOTCH_H + 48
 
 export default function Cart() {
-  const { cart, items, loading, handleGetCart, handleUpdateQuantity, handleRemoveItem } = useCart()
+  const { cart, items, loading, handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder } = useCart()
   const navigate = useNavigate()
+  const user = useSelector((state) => state.auth?.user || state.user)
+
+  /* Local quantity state — key: cartItem._id, value: number (Ankur's pattern) */
+  const [quantities, setQuantities] = useState({})
 
   useEffect(() => {
     handleGetCart()
@@ -16,13 +21,78 @@ export default function Cart() {
 
   const cartItems = items || cart?.items || []
 
-  // Calculate Subtotal
+  /* ─── Ankur's Helper Functions ─── */
+  const getVariantDetails = (product, variantId) => {
+    if (!product || !variantId) return null
+    const variantsList = product.variants || product.varients || []
+    return variantsList.find(v => v._id?.toString() === variantId?.toString())
+  }
+
+  const getDisplayImage = (product, variant) => {
+    if (variant?.images?.length) return variant.images[0].url
+    if (product?.images?.length) return product.images[0]?.url || product.images[0]
+    return DEFAULT_PRODUCT_IMAGE
+  }
+
+  const formatCurrency = (amount, currency = 'INR') =>
+    `${currency} ${Number(amount || 0).toLocaleString('en-IN')}`
+
+  const changeQty = (id, currentQty, delta, availableStock = 100) => {
+    const newQty = Math.max(1, Math.min(availableStock, (quantities[id] ?? currentQty) + delta))
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: newQty,
+    }))
+    handleUpdateQuantity(id, newQty)
+  }
+
+  /* Calculate Subtotal & Total */
   const subtotal = cartItems.reduce((acc, item) => {
+    const qty = quantities[item._id] ?? item.quantity ?? 1
     const itemPrice = item.price?.amount || item.product?.price?.amount || 0
-    return acc + Number(itemPrice) * Number(item.quantity || 1)
+    return acc + Number(itemPrice) * Number(qty)
   }, 0)
 
   const currency = cartItems[0]?.price?.currency || cartItems[0]?.product?.price?.currency || 'INR'
+
+  /* Ankur's Razorpay / Checkout Handler */
+  async function handleCheckout() {
+    try {
+      if (handleCreateCartOrder) {
+        const order = await handleCreateCartOrder()
+        if (order && window.Razorpay) {
+          const options = {
+            key: "rzp_test_ShNSkpxt3emQVJ",
+            amount: order.amount, // Amount in paise
+            currency: order.currency || currency,
+            name: "Velora",
+            description: "Marketplace Order",
+            order_id: order.id,
+            handler: async (response) => {
+              if (handleVerifyCartOrder) {
+                const isValid = await handleVerifyCartOrder(response)
+                if (isValid) {
+                  navigate(`/order-success?order_id=${response?.razorpay_order_id}`)
+                }
+              }
+            },
+            prefill: {
+              name: user?.fullname,
+              email: user?.email,
+              contact: user?.contact,
+            },
+          }
+          const razorpayInstance = new window.Razorpay(options)
+          razorpayInstance.open()
+          return
+        }
+      }
+      alert(`Proceeding to checkout with total ${formatCurrency(subtotal, currency)}!`)
+    } catch (err) {
+      console.error("Checkout error:", err)
+      alert(`Proceeding to checkout with total ${formatCurrency(subtotal, currency)}!`)
+    }
+  }
 
   const S = {
     page: {
@@ -88,7 +158,7 @@ export default function Cart() {
     },
   }
 
-  /* ── 1. Empty Cart View ── */
+  /* ─── 1. Empty Cart View ─── */
   if (!loading && cartItems.length === 0) {
     return (
       <div style={S.page}>
@@ -182,17 +252,21 @@ export default function Cart() {
               const itemTitle = prod.title || 'Velora Item'
               const itemPrice = item.price?.amount || prod.price?.amount || 0
               const itemCurrency = item.price?.currency || prod.price?.currency || currency
-              const itemImg = item.price?.image || prod.images?.[0]?.url || DEFAULT_PRODUCT_IMAGE
+              
+              /* Use Ankur's helper logic */
+              const variantObj = getVariantDetails(prod, item.variant)
+              const availableStock = variantObj ? (variantObj.stock ?? 0) : (prod.stock ?? 100)
+              const itemImg = getDisplayImage(prod, variantObj)
+              const currentQty = quantities[item._id] ?? item.quantity ?? 1
 
-              // Format variant details string if variant matches
-              const variantObj = prod.varients?.find(v => v._id?.toString() === item.variant?.toString())
-              const attrString = variantObj?.attribute
-                ? (variantObj.attribute instanceof Map
-                    ? Array.from(variantObj.attribute.values()).join(' / ')
-                    : typeof variantObj.attribute === 'object'
-                    ? Object.values(variantObj.attribute).filter(Boolean).join(' / ')
-                    : String(variantObj.attribute))
-                : ''
+              const rawAttr = variantObj?.attributes || variantObj?.attribute
+              const attrString = rawAttr
+                ? (rawAttr instanceof Map
+                    ? Array.from(rawAttr.values()).join(' / ')
+                    : typeof rawAttr === 'object'
+                    ? Object.values(rawAttr).filter(Boolean).join(' / ')
+                    : String(rawAttr))
+                : (variantObj?.title && variantObj.title !== 'Standard' ? variantObj.title : '')
 
               return (
                 <div key={item._id || idx} style={S.card}>
@@ -234,30 +308,41 @@ export default function Cart() {
                       </h3>
 
                       {attrString && (
-                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>
+                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', margin: '0 0 4px 0' }}>
                           Variant: <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{attrString}</span>
                         </p>
                       )}
 
-                      <p style={{ fontSize: 15, fontWeight: 700, color: '#34d399', margin: 0 }}>
-                        {itemCurrency} {Number(itemPrice).toLocaleString('en-IN')}
+                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', margin: '0 0 6px 0' }}>
+                        Stock: <span style={{ color: availableStock > 0 ? '#34d399' : '#f87171', fontWeight: 600 }}>{availableStock > 0 ? `${availableStock} units available` : 'Out of stock'}</span>
                       </p>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginTop: 4 }}>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: '#34d399', margin: 0 }}>
+                          {formatCurrency(itemPrice, itemCurrency)}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Quantity Stepper */}
+                    {/* Quantity Stepper (Ankur's changeQty) */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <button
                         style={S.stepperBtn}
-                        onClick={() => handleUpdateQuantity(item._id, Math.max(0, (item.quantity || 1) - 1))}
+                        onClick={() => changeQty(item._id, currentQty, -1, availableStock)}
                       >
                         −
                       </button>
                       <span style={{ fontSize: 14, fontWeight: 700, width: 24, textAlign: 'center' }}>
-                        {item.quantity || 1}
+                        {currentQty}
                       </span>
                       <button
-                        style={S.stepperBtn}
-                        onClick={() => handleUpdateQuantity(item._id, (item.quantity || 1) + 1)}
+                        style={{
+                          ...S.stepperBtn,
+                          opacity: currentQty >= availableStock ? 0.4 : 1,
+                          cursor: currentQty >= availableStock ? 'not-allowed' : 'pointer',
+                        }}
+                        disabled={currentQty >= availableStock}
+                        onClick={() => changeQty(item._id, currentQty, 1, availableStock)}
                       >
                         +
                       </button>
@@ -266,7 +351,7 @@ export default function Cart() {
                     {/* Total & Remove */}
                     <div style={{ textAlign: 'right', minWidth: 100 }}>
                       <p style={{ fontSize: 16, fontWeight: 700, color: '#ffffff', margin: '0 0 6px 0' }}>
-                        {itemCurrency} {(Number(itemPrice) * Number(item.quantity || 1)).toLocaleString('en-IN')}
+                        {formatCurrency(Number(itemPrice) * Number(currentQty), itemCurrency)}
                       </p>
                       <button
                         onClick={() => handleRemoveItem(item._id)}
@@ -311,17 +396,20 @@ export default function Cart() {
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)' }}>
                 <span>Subtotal ({cartItems.length} items)</span>
                 <span style={{ color: '#ffffff', fontWeight: 600 }}>
-                  {currency} {subtotal.toLocaleString('en-IN')}
+                  {formatCurrency(subtotal, currency)}
+                </span>
+              </div>
+
+              {/* Ankur's Complimentary Shipping Logic */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)' }}>
+                <span>Estimated Shipping</span>
+                <span style={{ color: subtotal >= 15000 ? '#34d399' : 'rgba(255,255,255,0.4)', fontWeight: 600 }}>
+                  {subtotal >= 15000 ? 'COMPLIMENTARY' : 'FREE over ₹15,000'}
                 </span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)' }}>
-                <span>Estimated Shipping</span>
-                <span style={{ color: '#34d399', fontWeight: 600 }}>FREE</span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)' }}>
-                <span>Taxes & Fees</span>
+                <span>Duties & Taxes</span>
                 <span style={{ color: 'rgba(255,255,255,0.4)' }}>Included</span>
               </div>
 
@@ -338,14 +426,15 @@ export default function Cart() {
               >
                 <span>Total Amount</span>
                 <span style={{ color: '#ffffff' }}>
-                  {currency} {subtotal.toLocaleString('en-IN')}
+                  {formatCurrency(subtotal, currency)}
                 </span>
               </div>
             </div>
 
-            {/* Checkout CTA Button */}
+            {/* Checkout CTA Button (Triggers Ankur's handleCheckout) */}
             <button
-              onClick={() => alert(`Proceeding to checkout with total ${currency} ${subtotal.toLocaleString('en-IN')}!`)}
+              id="proceed-checkout"
+              onClick={handleCheckout}
               style={{
                 width: '100%',
                 height: 52,
@@ -370,10 +459,13 @@ export default function Cart() {
               PROCEED TO CHECKOUT
             </button>
 
-            {/* Guarantees */}
+            {/* Ankur's Footnote & Guarantees */}
             <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ color: '#34d399' }}>✓</span> 100% Authentic Velora Verified Items
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: '#34d399' }}>✓</span> Free returns within 14 days
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ color: '#34d399' }}>✓</span> Secure 256-bit Encrypted Checkout

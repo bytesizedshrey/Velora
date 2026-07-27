@@ -1,66 +1,75 @@
 import mongoose from "mongoose";
 import priceSchema from "./price.schema.js";
 
-const productSchema = new mongoose.Schema({
-    title : {
-        type : String,
-        required : true
+const variantSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        default: "Standard Variant"
     },
-    description : {
-        type : String,
-        required : true
-    },
-    seller : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'user',
-        required : true
-    },
-    price : {
-        type : priceSchema,
-        required : true,
-    },
-    stock : {
-        type : Number,
-        default : 100
-    },
-    images : [
+    images: [
         {
-            url :{
-                type : String,
-                required : true
+            url: {
+                type: String,
+                required: true
             },
-            alt : {
-                type : String,
-                default : "Product Image"
+            alt: {
+                type: String,
+                default: "Variant Image"
             }
         }
     ],
-    varients:[
+    stock: {
+        type: Number,
+        default: 100
+    },
+    attributes: {
+        type: Map,
+        of: String,
+        default: {}
+    },
+    price: {
+        type: priceSchema,
+        required: false
+    }
+}, { timestamps: true });
+
+const productSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    },
+    price: {
+        type: priceSchema,
+        required: true,
+    },
+    stock: {
+        type: Number,
+        default: 100
+    },
+    images: [
         {
-            images : [
-                {
-                    url : {
-                        type : String, 
-                        required : true
-                    }
-                }
-            ],
-            stock : {
-                type : Number,
-                default : 100
+            url: {
+                type: String,
+                required: true
             },
-            attribute : {
-                type : Map,
-                of : String
-            },
-            price:{
-                type : priceSchema,
-                required : false,
+            alt: {
+                type: String,
+                default: "Product Image"
             }
-        },
-    ]
-},{timestamps : true})
+        }
+    ],
+    variants: [variantSchema]
+}, { timestamps: true });
 
-const productModel = mongoose.model('product',productSchema)
+const productModel = mongoose.model('product', productSchema);
 
-export default productModel
+export default productModel;

@@ -5,13 +5,13 @@ import { Home, ShoppingBag, PlusCircle, LayoutDashboard, Menu, X } from "lucide-
 import { cn } from "../../lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
-// Helper component for navigation links
+// Helper component for navigation links (clean text/icon without background hover effect)
 const NavLink = ({ href, icon: Icon, label }) => (
   <Link
     to={href}
-    className="group flex items-center gap-2 text-xs font-semibold text-white/90 hover:text-white transition-all whitespace-nowrap px-3 py-1.5 rounded-lg hover:bg-white/10 bg-transparent -translate-y-2.5"
+    className="group flex items-center gap-2 text-xs font-semibold text-white/90 hover:text-white transition-all whitespace-nowrap bg-transparent -translate-y-2.5"
   >
-    {Icon && <Icon className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100 bg-transparent" />}
+    {Icon && <Icon className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100 bg-transparent transition-opacity" />}
     <span className="bg-transparent">{label}</span>
   </Link>
 )

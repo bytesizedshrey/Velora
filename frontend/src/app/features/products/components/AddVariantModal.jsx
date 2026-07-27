@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 export const AddVariantModal = ({ isOpen, onClose, onAddVariant, productId }) => {
   const [images, setImages] = useState([])
   const [previews, setPreviews] = useState([])
+  const [variantTitle, setVariantTitle] = useState('')
   const [attrName, setAttrName] = useState('Color')
   const [attrValue, setAttrValue] = useState('')
   const [priceAmount, setPriceAmount] = useState('')
@@ -36,15 +37,17 @@ export const AddVariantModal = ({ isOpen, onClose, onAddVariant, productId }) =>
 
     setSubmitting(true)
     try {
-      const attribute = attrValue.trim() ? { [attrName]: attrValue.trim() } : {}
+      const attributes = attrValue.trim() ? { [attrName]: attrValue.trim() } : {}
       const variantPayload = {
+        title: variantTitle.trim() || attrValue.trim() || 'Custom Variant',
         images,
         stock: Number(stock) || 0,
         price: {
           amount: Number(priceAmount) || 0,
           currency: priceCurrency,
         },
-        attribute,
+        attributes,
+        attribute: attributes,
       }
 
       await onAddVariant(productId, variantPayload)
@@ -52,6 +55,7 @@ export const AddVariantModal = ({ isOpen, onClose, onAddVariant, productId }) =>
       // Reset
       setImages([])
       setPreviews([])
+      setVariantTitle('')
       setAttrValue('')
       setPriceAmount('')
     } catch (err) {
@@ -111,6 +115,30 @@ export const AddVariantModal = ({ isOpen, onClose, onAddVariant, productId }) =>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Variant Title */}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.72rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', fontWeight: 600, marginBottom: 6 }}>
+              Variant Title / Label
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Midnight Black / 256GB"
+              value={variantTitle}
+              onChange={(e) => setVariantTitle(e.target.value)}
+              style={{
+                width: '100%',
+                height: 38,
+                padding: '0 12px',
+                borderRadius: 8,
+                background: '#060606',
+                border: '1px solid #222',
+                color: '#fff',
+                fontSize: '0.82rem',
+                outline: 'none',
+              }}
+            />
+          </div>
+
           {/* Images Picker */}
           <div>
             <label style={{ display: 'block', fontSize: '0.72rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', fontWeight: 600, marginBottom: 8 }}>

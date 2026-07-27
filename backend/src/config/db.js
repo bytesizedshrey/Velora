@@ -1,10 +1,11 @@
 import mongoose from "mongoose"
 import { config } from "./config.js"
+import { runAutoMigration } from "../services/migration.service.js"
 
 const connectDB = async () => {
     await mongoose.connect(config.MONGO_URI)
     console.log('MongoDB connected')
+    await runAutoMigration()
 }
 
 export default connectDB
-

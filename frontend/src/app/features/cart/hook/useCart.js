@@ -1,15 +1,16 @@
 import { useDispatch, useSelector } from "react-redux"
 import { addItem, getCart, updateCartItem, removeCartItem } from "../service/cart.api"
-import { setCart, addItem as addItemToCart, setLoading, setError } from "../state/cart.slice"
+import { setCart, setLoading, setError } from "../state/cart.slice"
 
 export const useCart = () => {
     const dispatch = useDispatch()
     const cartState = useSelector(state => state.cart)
 
-    async function handleAddItem({ productId, varientId, quantity = 1 }) {
+    async function handleAddItem({ productId, variantId, varientId, quantity = 1 }) {
         try {
             dispatch(setLoading(true))
-            const data = await addItem({ productId, varientId, quantity })
+            const vId = variantId || varientId
+            const data = await addItem({ productId, variantId: vId, quantity })
             if (data?.cart) {
                 dispatch(setCart(data.cart))
             }

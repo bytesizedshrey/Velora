@@ -8,6 +8,7 @@ import ProductVariantCarousel from '../components/ProductVariantCarousel'
 import AddVariantModal from '../components/AddVariantModal'
 import VariantSelector from '../components/VariantSelector'
 import { useCart } from '../../cart/hook/useCart'
+import { resolveVariantImages } from '../utils/variantHelper'
 
 const NOTCH_H = 64
 const TOP_PAD = NOTCH_H + 48  // 112px clearance from notch
@@ -36,6 +37,7 @@ export default function ProductDetail({ productData = null, loadingState = null,
   const [selectedAttributes, setSelectedAttributes] = useState({})
   const [addingToCart, setAddingToCart] = useState(false)
   const [cartMessage, setCartMessage] = useState({ text: '', isError: false })
+  const [stickyBarVisible, setStickyBarVisible] = useState(true)
   const pageRef = useRef(null)
 
   useEffect(() => {
@@ -46,13 +48,16 @@ export default function ProductDetail({ productData = null, loadingState = null,
   }, [productData, loadingState])
 
   useEffect(() => {
-    if (product?.varients && product.varients.length > 0) {
-      const firstVar = product.varients[selectedVariantIdx] || product.varients[0]
-      const attrObj = firstVar?.attribute
-        ? (firstVar.attribute instanceof Map
+    const list = product?.variants || product?.varients || []
+    if (list.length > 0) {
+      const firstVar = list[selectedVariantIdx] || list[0]
+      const attrObj = firstVar?.attributes || firstVar?.attribute
+        ? (firstVar.attributes instanceof Map
+            ? Object.fromEntries(firstVar.attributes)
+            : firstVar.attribute instanceof Map
             ? Object.fromEntries(firstVar.attribute)
-            : typeof firstVar.attribute === 'object'
-            ? firstVar.attribute
+            : typeof (firstVar.attributes || firstVar.attribute) === 'object'
+            ? (firstVar.attributes || firstVar.attribute)
             : {})
         : {}
       setSelectedAttributes(attrObj)
@@ -60,9 +65,14 @@ export default function ProductDetail({ productData = null, loadingState = null,
   }, [product, selectedVariantIdx])
 
   const activeVariant = useMemo(() => {
-    if (!product?.varients || product.varients.length === 0) return null
-    return product.varients[selectedVariantIdx] || product.varients[0]
+    const list = product?.variants || product?.varients || []
+    if (list.length === 0) return null
+    return list[selectedVariantIdx] || list[0]
   }, [product, selectedVariantIdx])
+
+  const images = useMemo(() => {
+    return resolveVariantImages(activeVariant, selectedVariantIdx, product?.images || [])
+  }, [activeVariant, selectedVariantIdx, product])
 
   const fetchProductDetail = async () => {
     if (productData || product) {
@@ -157,9 +167,6 @@ export default function ProductDetail({ productData = null, loadingState = null,
   }
 
   /* ── Derived Data (Variant Fallback to Main Product) ── */
-  const variantImages = activeVariant?.images?.length > 0 ? activeVariant.images : null
-  const mainImages = product.images?.length > 0 ? product.images : [{ url: DEFAULT_PRODUCT_IMAGE }]
-  const images = variantImages || mainImages
 
   const price = (activeVariant?.price?.amount !== undefined && activeVariant?.price?.amount !== null && Number(activeVariant.price.amount) > 0)
     ? Number(activeVariant.price.amount)
@@ -181,14 +188,16 @@ export default function ProductDetail({ productData = null, loadingState = null,
 
   const handleSelectVariantIdx = (idx) => {
     setSelectedVariantIdx(idx)
-    setActiveImg(idx)
-    if (product?.varients?.[idx]) {
-      const v = product.varients[idx]
-      const attrObj = v?.attribute
-        ? (v.attribute instanceof Map
-            ? Object.fromEntries(v.attribute)
-            : typeof v.attribute === 'object'
-            ? v.attribute
+    setActiveImg(0)   // reset to first image of newly selected variant
+    const list = product?.variants || product?.varients || []
+    if (list[idx]) {
+      const v = list[idx]
+      const rawAttr = v?.attributes || v?.attribute
+      const attrObj = rawAttr
+        ? (rawAttr instanceof Map
+            ? Object.fromEntries(rawAttr)
+            : typeof rawAttr === 'object'
+            ? rawAttr
             : {})
         : {}
       if (Object.keys(attrObj).length > 0) {
@@ -200,34 +209,40 @@ export default function ProductDetail({ productData = null, loadingState = null,
   const handleSelectAttribute = (key, val) => {
     const newAttrs = { ...selectedAttributes, [key]: val }
     setSelectedAttributes(newAttrs)
+    const list = product?.variants || product?.varients || []
 
-    if (product?.varients) {
-      const matchIdx = product.varients.findIndex((v) => {
-        const vAttr = v.attribute
-          ? (v.attribute instanceof Map
-              ? Object.fromEntries(v.attribute)
-              : typeof v.attribute === 'object'
-              ? v.attribute
+    if (list.length > 0) {
+      const matchIdx = list.findIndex((v) => {
+        const rawAttr = v.attributes || v.attribute
+        const vAttr = rawAttr
+          ? (rawAttr instanceof Map
+              ? Object.fromEntries(rawAttr)
+              : typeof rawAttr === 'object'
+              ? rawAttr
               : {})
           : {}
-        return Object.entries(newAttrs).every(([k, vVal]) => !vAttr[k] || vAttr[k] === vVal)
+        return Object.entries(newAttrs).every(([k, vVal]) => {
+          if (!vAttr[k]) return true
+          return String(vAttr[k]).toLowerCase() === String(vVal).toLowerCase()
+        })
       })
       if (matchIdx !== -1) {
         setSelectedVariantIdx(matchIdx)
-        setActiveImg(matchIdx)
+        setActiveImg(0)   // reset to first image of newly selected variant
       }
     }
   }
 
   const handleAddToCartAsync = async () => {
     if (!product) return
-    const targetVarientId = activeVariant?._id
-      || product.varients?.[selectedVariantIdx]?._id
-      || product.varients?.[0]?._id
+    const list = product?.variants || product?.varients || []
+    const targetVariantId = activeVariant?._id
+      || list[selectedVariantIdx]?._id
+      || list[0]?._id
       || product._id
       || productId
 
-    if (!targetVarientId) {
+    if (!targetVariantId) {
       setCartMessage({ text: 'Unable to identify product variant.', isError: true })
       return
     }
@@ -238,7 +253,7 @@ export default function ProductDetail({ productData = null, loadingState = null,
     try {
       const res = await handleAddItem({
         productId: product._id || productId,
-        varientId: targetVarientId,
+        variantId: targetVariantId,
         quantity: qty
       })
       if (res?.success !== false) {
@@ -356,29 +371,14 @@ export default function ProductDetail({ productData = null, loadingState = null,
         {/* Main Grid Layout */}
         <div style={S.grid}>
 
-          {/* ── LEFT: Gallery / Product & Variant Diagonal Carousel ── */}
+          {/* ── LEFT: 3D Coverflow Diagonal Carousel for active variant ── */}
           <div data-fade style={{ position: 'sticky', top: TOP_PAD + 16 }}>
             <ProductVariantCarousel
               images={images}
-              varients={product.varients}
-              title={product.title}
+              allProductImages={product?.images}
+              title={product?.title}
               activeIdx={activeImg}
-              onSelectIdx={(idx) => {
-                setActiveImg(idx)
-                if (product.varients?.[idx]) {
-                  const v = product.varients[idx]
-                  const attrObj = v?.attribute
-                    ? (v.attribute instanceof Map
-                        ? Object.fromEntries(v.attribute)
-                        : typeof v.attribute === 'object'
-                        ? v.attribute
-                        : {})
-                    : {}
-                  if (Object.keys(attrObj).length > 0) {
-                    setSelectedAttributes(attrObj)
-                  }
-                }
-              }}
+              onSelectIdx={setActiveImg}
             />
           </div>
 
@@ -402,7 +402,8 @@ export default function ProductDetail({ productData = null, loadingState = null,
             {/* 2. Variant Selector */}
             <div data-fade>
               <VariantSelector
-                varients={product.varients}
+                variants={product.variants || product.varients}
+                varients={product.variants || product.varients}
                 mainImages={product.images}
                 selectedVariantIdx={selectedVariantIdx}
                 onSelectVariantIdx={handleSelectVariantIdx}
@@ -792,6 +793,237 @@ export default function ProductDetail({ productData = null, loadingState = null,
           productId={product?._id}
         />
       )}
+
+      {/* ── Sticky Buy Bar (buyer only) ── */}
+      {!isSeller && product && (
+        <StickyBuyBar
+          visible={stickyBarVisible}
+          product={product}
+          activeVariant={activeVariant}
+          variantImg={images?.[0]?.url || DEFAULT_PRODUCT_IMAGE}
+          price={price}
+          currency={currency}
+          inStock={inStock}
+          qty={qty}
+          setQty={setQty}
+          addingToCart={addingToCart}
+          onAddToCart={handleAddToCartAsync}
+          onDismiss={() => setStickyBarVisible(false)}
+        />
+      )}
     </div>
   )
 }
+
+/* ─────────────────────────────────────────────────────
+   Sticky Buy Bar
+───────────────────────────────────────────────────── */
+function StickyBuyBar({ visible, product, activeVariant, variantImg, price, currency, inStock, qty, setQty, addingToCart, onAddToCart, onDismiss }) {
+  const [barDown, setBarDown] = useState(false)
+
+  const variantTitle = activeVariant?.title
+    || Object.values(
+        activeVariant?.attributes instanceof Map
+          ? Object.fromEntries(activeVariant.attributes)
+          : (activeVariant?.attributes || activeVariant?.attribute || {})
+      ).filter(Boolean).join(' / ')
+    || 'Standard'
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+        transform: visible ? 'translateY(0)' : 'translateY(110%)',
+        transition: 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)',
+        pointerEvents: visible ? 'auto' : 'none',
+      }}
+    >
+      {/* Gradient fade above bar */}
+      <div style={{
+        height: 48,
+        background: 'linear-gradient(to top, rgba(6,6,6,0.95), transparent)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Main bar */}
+      <div style={{
+        background: 'linear-gradient(180deg, #111111 0%, #080808 100%)',
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+        boxShadow: '0 -8px 40px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.08)',
+        padding: '14px 24px 22px',
+      }}>
+        <div style={{
+          maxWidth: 960,
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+        }}>
+
+          {/* Variant thumbnail + info */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
+            <div style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              overflow: 'hidden',
+              flexShrink: 0,
+              border: '1px solid rgba(255,255,255,0.12)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.8)',
+            }}>
+              <img
+                src={variantImg}
+                alt={variantTitle}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <p style={{
+                margin: 0,
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#ffffff',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
+                {product.title}
+              </p>
+              <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.38)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  background: 'rgba(255,255,255,0.06)', borderRadius: 5,
+                  padding: '1px 7px', fontSize: 10, fontWeight: 600,
+                  color: 'rgba(255,255,255,0.5)', letterSpacing: '0.04em',
+                }}>
+                  {variantTitle}
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.55)', fontWeight: 700 }}>
+                  {currency} {price.toLocaleString('en-IN')}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          {/* Quantity stepper */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 12,
+            background: 'rgba(255,255,255,0.04)',
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={() => setQty(q => Math.max(1, q - 1))}
+              disabled={!inStock}
+              style={{
+                width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 18, fontWeight: 300, color: 'rgba(255,255,255,0.4)',
+                background: 'none', border: 'none', cursor: 'pointer',
+              }}
+              onMouseEnter={e => { if (inStock) e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+            >
+              −
+            </button>
+            <span style={{ width: 36, textAlign: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
+              {qty}
+            </span>
+            <button
+              onClick={() => setQty(q => q + 1)}
+              disabled={!inStock}
+              style={{
+                width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 18, fontWeight: 300, color: 'rgba(255,255,255,0.4)',
+                background: 'none', border: 'none', cursor: 'pointer',
+              }}
+              onMouseEnter={e => { if (inStock) e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+            >
+              +
+            </button>
+          </div>
+
+          {/* Add to Cart CTA */}
+          <button
+            onClick={onAddToCart}
+            disabled={!inStock || addingToCart}
+            onMouseDown={() => setBarDown(true)}
+            onMouseUp={() => setBarDown(false)}
+            onMouseLeave={() => setBarDown(false)}
+            style={{
+              height: 46,
+              padding: '0 28px',
+              borderRadius: 14,
+              fontSize: 13,
+              fontWeight: 700,
+              letterSpacing: '0.02em',
+              color: inStock ? '#000000' : 'rgba(255,255,255,0.3)',
+              background: inStock
+                ? (barDown
+                    ? 'linear-gradient(180deg, #d4d4d4 0%, #a3a3a3 100%)'
+                    : 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)')
+                : 'rgba(255,255,255,0.06)',
+              borderTop: inStock ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
+              borderLeft: inStock ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
+              borderRight: inStock ? '1px solid #999' : '1px solid rgba(255,255,255,0.04)',
+              borderBottom: inStock ? '1px solid #999' : '1px solid rgba(255,255,255,0.04)',
+              boxShadow: inStock
+                ? (barDown
+                    ? 'inset 0 3px 8px rgba(0,0,0,0.15)'
+                    : '0 6px 20px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.9)')
+                : 'none',
+              cursor: (inStock && !addingToCart) ? 'pointer' : 'not-allowed',
+              opacity: (inStock && !addingToCart) ? 1 : 0.4,
+              transform: barDown ? 'translateY(1px)' : 'none',
+              transition: 'all 0.12s ease',
+              display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
+            }}
+          >
+            {addingToCart ? (
+              <>
+                <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.3"/>
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                </svg>
+                Adding...
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                {inStock ? 'Add to Cart' : 'Out of Stock'}
+              </>
+            )}
+          </button>
+
+          {/* Dismiss */}
+          <button
+            onClick={onDismiss}
+            style={{
+              width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+              color: 'rgba(255,255,255,0.25)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+            title="Dismiss"
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+          
