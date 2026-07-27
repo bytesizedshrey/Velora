@@ -12,6 +12,9 @@ import { config } from "./config/config.js";
 
 const app = express()
 
+// Trust reverse proxies (Render, Vercel, Cloudflare) for HTTPS protocol detection
+app.set("trust proxy", 1)
+
 app.use(morgan("dev"))
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
@@ -39,10 +42,10 @@ app.use(cors({
 app.use(passport.initialize())
 if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
     const callbackURL = process.env.BACKEND_URL
-      ? `${process.env.BACKEND_URL}/api/auth/google/callback`
+      ? `${process.env.BACKEND_URL.replace(/\/$/, '')}/api/auth/google/callback`
       : (process.env.NODE_ENV === "production"
           ? "https://by-jessika-backend.onrender.com/api/auth/google/callback"
-          : "/api/auth/google/callback");
+          : "http://localhost:3000/api/auth/google/callback");
 
     passport.use(new GoogleStrategy({
         clientID: config.GOOGLE_CLIENT_ID,
