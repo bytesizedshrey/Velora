@@ -103,7 +103,7 @@ export default function Cart() {
         key: orderData.key || "rzp_test_VeloraStoreKey",
         amount: orderData.amount,
         currency: orderData.currency || "INR",
-        name: "By Jessika",
+        name: "Velora",
         description: `Order ${orderData.orderId}`,
         order_id: orderData.razorpayOrderId,
         handler: async (response) => {
@@ -129,8 +129,8 @@ export default function Cart() {
           }
         },
         prefill: {
-          name: user?.fullname || user?.name || "By Jessika Customer",
-          email: user?.email || "customer@byjessika.com",
+          name: user?.fullname || user?.name || "Velora Customer",
+          email: user?.email || "customer@velora.com",
         },
         theme: {
           color: "#060606",
@@ -338,7 +338,7 @@ export default function Cart() {
                 : ''
               const itemTitle = prod.title
                 ? (variantTitleName && !prod.title.toLowerCase().includes(variantTitleName.toLowerCase()) ? `${prod.title} (${variantTitleName})` : prod.title)
-                : (variantObj?.title || 'By Jessika Piece')
+                : (variantObj?.title || 'Velora Piece')
 
               const itemImg = getDisplayImage(prod, variantObj)
 
@@ -573,7 +573,7 @@ export default function Cart() {
             {/* Guarantees */}
             <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: '#34d399' }}>✓</span> 100% Authentic By Jessika Verified Items
+                <span style={{ color: '#34d399' }}>✓</span> 100% Authentic Velora Verified Items
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ color: '#34d399' }}>✓</span> Free returns within 14 days

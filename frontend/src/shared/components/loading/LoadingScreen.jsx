@@ -14,7 +14,7 @@ const TRAIL_IMAGES = [
 
 /**
  * LoadingScreen
- * Reusable fullscreen luxury fashion loading screen for By Jessika.
+ * Reusable fullscreen luxury fashion loading screen for Velora.
  */
 const LoadingScreen = ({ isVisible = true, onComplete }) => {
   const overlayRef = useRef(null)
@@ -91,7 +91,7 @@ const LoadingScreen = ({ isVisible = true, onComplete }) => {
   return (
     <div
       ref={overlayRef}
-      aria-label="Loading By Jessika"
+      aria-label="Loading Velora"
       role="status"
       style={{
         position: "fixed",
@@ -141,7 +141,7 @@ const LoadingScreen = ({ isVisible = true, onComplete }) => {
             textTransform: "uppercase",
           }}
         >
-          BY JESSIKA
+          VELORA
         </div>
 
         {/* Tagline */}
@@ -157,7 +157,7 @@ const LoadingScreen = ({ isVisible = true, onComplete }) => {
             margin: 0,
           }}
         >
-          For the Future She Always Imagined.
+          Wear Confidence.
         </p>
 
         {/* Loading dots */}

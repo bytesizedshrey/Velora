@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: by-jessika-backend
+    name: velora-backend
     env: node
     region: singapore
     plan: free

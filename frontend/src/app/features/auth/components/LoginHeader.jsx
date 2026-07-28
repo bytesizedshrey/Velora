@@ -20,19 +20,19 @@ const LoginHeader = () => {
             textTransform: "uppercase",
           }}
         >
-          By Jessika
+          Velora
         </h2>
         <p
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: "0.75rem",
+            fontSize: "0.78rem",
             fontStyle: "italic",
             color: "rgba(255, 255, 255, 0.5)",
             margin: 0,
             letterSpacing: "0.05em",
           }}
         >
-          For the Future She Always Imagined.
+          Wear Confidence.
         </p>
       </div>
 
@@ -103,7 +103,7 @@ const LoginHeader = () => {
           maxWidth: "34ch",
         }}
       >
-        Enter your credentials to access your By Jessika account.
+        Enter your credentials to access your Velora account.
       </p>
     </div>
   )

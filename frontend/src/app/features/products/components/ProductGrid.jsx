@@ -172,7 +172,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
                 }}
               >
                 <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
-                  {product.seller?.fullname || 'By Jessika Atelier'}
+                  {product.seller?.fullname || 'Velora Atelier'}
                 </div>
                 <span
                   style={{

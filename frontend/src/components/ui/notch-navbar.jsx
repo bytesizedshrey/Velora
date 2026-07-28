@@ -99,11 +99,11 @@ export function NotchNavbar({ className, ...props }) {
                 {isMobileMenuOpen ? <X className="w-5 h-5 bg-transparent" /> : <Menu className="w-5 h-5 bg-transparent" />}
               </button>
 
-              {/* Logo (Center Notch - High Fashion BY JESSIKA) */}
+              {/* Logo (Center Notch - High Fashion VELORA) */}
               <div className="flex justify-center shrink-0 mx-2 md:mx-4 bg-transparent -translate-y-2.5">
-                <Link to="/" aria-label="By Jessika Home" className="flex items-center gap-2 group bg-transparent">
+                <Link to="/" aria-label="Velora Home" className="flex items-center gap-2 group bg-transparent">
                   <span className="font-['Cormorant_Garamond',serif] text-sm md:text-base font-bold tracking-[0.2em] text-white uppercase group-hover:text-stone-300 transition-colors whitespace-nowrap">
-                    BY JESSIKA
+                    VELORA
                   </span>
                 </Link>
               </div>

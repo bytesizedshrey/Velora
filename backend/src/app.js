@@ -57,7 +57,7 @@ if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
 }
 
 app.get("/",(_req, res)=>{
-    res.status(200).json({message : "By Jessika server is running"})
+    res.status(200).json({message : "Velora server is running"})
 })
 
 app.use("/api/auth",authRouter)

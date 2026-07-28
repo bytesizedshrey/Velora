@@ -69,17 +69,17 @@ export default function OrderSuccess() {
             textTransform: "uppercase",
           }}
         >
-          BY JESSIKA
+          VELORA
         </h2>
         <p style={{ fontSize: "0.8rem", fontStyle: "italic", color: "rgba(255,255,255,0.5)", margin: "0 0 20px 0" }}>
-          For the Future She Always Imagined.
+          Wear Confidence.
         </p>
 
         <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 8px 0", letterSpacing: "-0.02em" }}>
           PAYMENT SUCCESSFUL!
         </h1>
         <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", margin: "0 0 28px 0", lineHeight: 1.6 }}>
-          Thank you for your order with By Jessika. Your payment has been verified and your order is being processed.
+          Thank you for your order with Velora. Your payment has been verified and your order is being processed.
         </p>
 
         {/* Order Details Card */}

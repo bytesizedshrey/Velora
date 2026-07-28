@@ -62,14 +62,14 @@ const HeroSection = ({ totalProductsCount = 0 }) => {
             textTransform: 'uppercase',
           }}
         >
-          By Jessika
+          Velora
         </h1>
 
         {/* Tagline — Supporting Statement */}
         <p
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
+            fontSize: '1.05rem',
             fontStyle: 'italic',
             fontWeight: 300,
             color: 'rgba(255,255,255,0.7)',
@@ -78,7 +78,7 @@ const HeroSection = ({ totalProductsCount = 0 }) => {
             letterSpacing: '0.04em',
           }}
         >
-          For the Future She Always Imagined.
+          Wear Confidence.
         </p>
       </div>
 

@@ -20,19 +20,19 @@ const RegisterHeader = () => {
             textTransform: "uppercase",
           }}
         >
-          By Jessika
+          Velora
         </h2>
         <p
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: "0.75rem",
+            fontSize: "0.78rem",
             fontStyle: "italic",
             color: "rgba(255, 255, 255, 0.5)",
             margin: 0,
             letterSpacing: "0.05em",
           }}
         >
-          For the Future She Always Imagined.
+          Wear Confidence.
         </p>
       </div>
 
@@ -87,7 +87,7 @@ const RegisterHeader = () => {
           Join&nbsp;
         </span>
         <span className="register-heading-word" style={{ display: "inline-block" }}>
-          By Jessika.
+          Velora.
         </span>
       </h1>
 
@@ -103,7 +103,7 @@ const RegisterHeader = () => {
           maxWidth: "34ch",
         }}
       >
-        Step into luxury high fashion designed for her future.
+        Step into luxury high fashion designed to wear confidence.
       </p>
     </div>
   )

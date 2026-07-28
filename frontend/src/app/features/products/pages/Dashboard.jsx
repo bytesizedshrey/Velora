@@ -295,7 +295,7 @@ const Dashboard = () => {
               color: '#ffffff',
               textTransform: 'uppercase',
             }}>
-              By Jessika
+              Velora
             </span>
           </Link>
           <span style={{ color: '#1a1a1a', fontSize: '0.8rem' }}>/</span>
@@ -629,7 +629,7 @@ const Dashboard = () => {
                 {searchQuery ? 'No matching products found' : 'No products listed yet'}
               </h3>
               <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.25)', marginTop: 4, maxWidth: 360 }}>
-                {searchQuery ? 'Try adjusting your search terms or filters.' : 'Create your first product listing to start selling on By Jessika.'}
+                {searchQuery ? 'Try adjusting your search terms or filters.' : 'Create your first product listing to start selling on Velora.'}
               </p>
             </div>
             {!searchQuery && (

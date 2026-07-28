@@ -89,8 +89,8 @@ function getScrollParent(node) {
 }
 
 export function AnimatedFooter({
-  headingLines = ["BY JESSIKA"],
-  tagline = "For the Future She Always Imagined.",
+  headingLines = ["VELORA"],
+  tagline = "Wear Confidence.",
   leftImage = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60",
   rightImage = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60",
   background,
@@ -425,7 +425,7 @@ export function AnimatedFooter({
         )}
         
         <p className="text-[10px] text-stone-600 tracking-widest uppercase mt-2">
-          © {new Date().getFullYear()} By Jessika. All Rights Reserved.
+          © {new Date().getFullYear()} Velora. All Rights Reserved.
         </p>
       </div>
     </footer>
