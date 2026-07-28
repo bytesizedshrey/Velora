@@ -3,14 +3,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
-const isProduction = process.env.NODE_ENV === "production";
+const getCookieOptions = (req) => {
+    const host = req?.headers?.host || "";
+    const isRender = host.includes("onrender.com") || !!process.env.RENDER || !!process.env.RENDER_SERVICE_ID || !!process.env.RENDER_EXTERNAL_URL;
+    const isProd = isRender || (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === "production");
 
-const getCookieOptions = () => ({
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000
-});
+    return {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    };
+};
 
 export const register = async (req, res) => {
     try {
@@ -41,7 +45,7 @@ export const register = async (req, res) => {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token, getCookieOptions())
+        res.cookie("token", token, getCookieOptions(req))
 
         return res.status(201).json({
             message: "User registered successfully",
@@ -83,7 +87,7 @@ export const login = async (req, res) => {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token, getCookieOptions())
+        res.cookie("token", token, getCookieOptions(req))
 
         return res.status(200).json({
             message: "User logged in successfully",
@@ -123,7 +127,7 @@ export const googleCallback = async (req, res) => {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token, getCookieOptions())
+        res.cookie("token", token, getCookieOptions(req))
 
         // Smart production detection: Check FRONTEND_URL, NODE_ENV, or Host header
         const hostHeader = req.headers.host || "";
