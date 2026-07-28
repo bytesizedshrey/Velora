@@ -16,6 +16,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
   return (
     <div
       data-anim
+      className="product-grid"
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -28,6 +29,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
         return (
           <div
             key={product._id}
+            className="product-card"
             onClick={() => handleProductClick(product)}
             style={{
               borderRadius: 20,
@@ -42,6 +44,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
               flexDirection: 'column',
               cursor: 'pointer',
               transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+              WebkitTapHighlightColor: 'transparent',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-4px)'
@@ -54,7 +57,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
                 '0 8px 24px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06)'
             }}
           >
-            {/* Image Container with Luxury 4/5 Aspect Ratio */}
+            {/* Image Container */}
             <div
               style={{
                 position: 'relative',
@@ -67,15 +70,17 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
               <img
                 src={mainImg}
                 alt={product.title}
+                loading="lazy"
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
                   transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'block',
                 }}
               />
 
-              {/* High Fashion Price Badge */}
+              {/* Price Badge */}
               <div
                 style={{
                   position: 'absolute',
@@ -92,6 +97,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
                   fontWeight: 700,
                   letterSpacing: '0.04em',
                   color: '#ffffff',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {product.price?.currency || 'USD'}{' '}
@@ -121,6 +127,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
 
             {/* Card Content */}
             <div
+              className="product-card__content"
               style={{
                 padding: '18px 20px',
                 display: 'flex',
@@ -132,6 +139,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
             >
               <div>
                 <h4
+                  className="product-card__title"
                   style={{
                     fontFamily: "'Inter', sans-serif",
                     fontSize: '1rem',
@@ -148,6 +156,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
                   {product.title}
                 </h4>
                 <p
+                  className="product-card__desc"
                   style={{
                     fontSize: '0.8rem',
                     color: 'rgba(255, 255, 255, 0.45)',
@@ -184,6 +193,7 @@ const ProductGrid = ({ products = [], onSelectProduct }) => {
                     padding: '4px 10px',
                     borderRadius: 8,
                     border: '1px solid rgba(255,255,255,0.12)',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   View Piece →

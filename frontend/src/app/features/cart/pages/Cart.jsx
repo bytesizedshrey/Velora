@@ -237,6 +237,8 @@ export default function Cart() {
     },
   }
 
+  const formatSubtotal = formatCurrency(subtotal, currency)
+
   /* ─── 1. Empty Cart View ─── */
   if (!items || items.length === 0) {
     return (
@@ -293,13 +295,13 @@ export default function Cart() {
   }
 
   return (
-    <div style={S.page}>
+    <div className="cart-page" style={S.page}>
       <div style={S.shell}>
 
         {/* Top Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <h1 style={S.title}>MY SHOPPING CART</h1>
+            <h1 className="cart-page__title" style={S.title}>MY SHOPPING CART</h1>
             <p style={S.subtitle}>Review your selected items and manage quantities before checkout.</p>
           </div>
           <button
@@ -321,7 +323,7 @@ export default function Cart() {
         </div>
 
         {/* Grid Layout */}
-        <div style={S.grid}>
+        <div className="cart-grid" style={S.grid}>
 
           {/* ── LEFT: Items List ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -411,8 +413,10 @@ export default function Cart() {
                     {/* Quantity Stepper */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <button
+                        className="cart-stepper-btn"
                         style={S.stepperBtn}
                         onClick={() => changeQty(item, -1, availableStock)}
+                        aria-label="Decrease quantity"
                       >
                         −
                       </button>
@@ -420,12 +424,14 @@ export default function Cart() {
                         {currentQty}
                       </span>
                       <button
+                        className="cart-stepper-btn"
                         style={{
                           ...S.stepperBtn,
                           opacity: currentQty >= availableStock ? 0.4 : 1,
                           cursor: currentQty >= availableStock ? 'not-allowed' : 'pointer',
                         }}
                         disabled={currentQty >= availableStock}
+                        aria-label="Increase quantity"
                         onClick={() => {
                           if (handleIncrementCartItem && prod._id) {
                             handleIncrementCartItem({ productId: prod._id, variantId })
@@ -471,7 +477,7 @@ export default function Cart() {
           </div>
 
           {/* ── RIGHT: Summary Sidebar ── */}
-          <div style={S.card}>
+          <div className="cart-summary-card" style={S.card}>
             <h2
               style={{
                 fontSize: 18,
@@ -525,8 +531,9 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Razorpay Checkout CTA Button */}
+            {/* Razorpay Checkout CTA Button — hidden on mobile (sticky bar handles it) */}
             <button
+              className="cart-summary-checkout-btn-desktop"
               id="proceed-checkout"
               onClick={handleCheckout}
               disabled={isProcessingCheckout}
@@ -588,6 +595,43 @@ export default function Cart() {
         </div>
 
       </div>
+
+      {/* ── MOBILE STICKY CHECKOUT BAR ── */}
+      <div className="cart-sticky-checkout">
+        <div className="cart-sticky-checkout__total">
+          <span>{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+          <span style={{ fontWeight: 700, color: '#fff', fontSize: '0.9rem' }}>{formatSubtotal}</span>
+        </div>
+        <button
+          className="cart-sticky-checkout__btn"
+          onClick={handleCheckout}
+          disabled={isProcessingCheckout}
+          style={{
+            width: '100%',
+            height: 52,
+            borderRadius: 14,
+            background: isProcessingCheckout
+              ? 'linear-gradient(180deg, #1c1c1c 0%, #101010 100%)'
+              : 'linear-gradient(180deg, #2a2a2a 0%, #141414 100%)',
+            color: isProcessingCheckout ? 'rgba(255,255,255,0.4)' : '#ffffff',
+            fontSize: '0.9rem',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            border: '1px solid rgba(255,255,255,0.15)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.8)',
+            cursor: isProcessingCheckout ? 'not-allowed' : 'pointer',
+            outline: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
+        >
+          {isProcessingCheckout ? 'Processing...' : 'PROCEED TO CHECKOUT'}
+        </button>
+      </div>
+
     </div>
   )
 }

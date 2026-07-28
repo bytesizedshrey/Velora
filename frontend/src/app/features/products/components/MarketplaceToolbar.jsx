@@ -12,6 +12,7 @@ const MarketplaceToolbar = ({
   return (
     <div
       data-anim
+      className="marketplace-toolbar"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -29,12 +30,15 @@ const MarketplaceToolbar = ({
       }}
     >
       {/* Item count text */}
-      <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+      <span
+        className="marketplace-toolbar__count"
+        style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}
+      >
         Showing <strong style={{ color: '#ffffff' }}>{filteredCount}</strong>{' '}
         {filteredCount === 1 ? 'product' : 'products'}
       </span>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div className="marketplace-toolbar__controls" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {/* Sort Dropdown */}
         <div
           style={{
@@ -46,19 +50,22 @@ const MarketplaceToolbar = ({
             borderBottom: '1px solid #1a1a1a',
             boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.6)',
             overflow: 'hidden',
+            flex: 1,
           }}
         >
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
+            aria-label="Sort products"
             style={{
-              height: 36,
+              width: '100%',
+              height: 44,
               padding: '0 14px',
               background: 'transparent',
               border: 'none',
               color: 'rgba(255,255,255,0.75)',
               fontSize: '0.78rem',
-              fontFamily: "'Duality', 'Orbitron', 'Space Grotesk', system-ui",
+              fontFamily: "'Inter', system-ui",
               cursor: 'pointer',
               outline: 'none',
               appearance: 'none',
@@ -72,7 +79,7 @@ const MarketplaceToolbar = ({
           </select>
         </div>
 
-        {/* View Mode Rocker Switch */}
+        {/* View Mode Toggle */}
         <div
           style={{
             display: 'inline-flex',
@@ -86,14 +93,18 @@ const MarketplaceToolbar = ({
             borderRight: '1px solid #1a1a1a',
             borderBottom: '1px solid #1a1a1a',
             boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.6)',
+            flexShrink: 0,
           }}
         >
           <button
             type="button"
             onClick={() => onViewModeChange('grid')}
+            aria-label="Grid view"
+            aria-pressed={viewMode === 'grid'}
+            className="marketplace-toolbar__view-btn"
             style={{
-              width: 32,
-              height: 32,
+              width: 44,
+              height: 44,
               borderRadius: 7,
               boxSizing: 'border-box',
               border: viewMode === 'grid' ? '1px solid #282828' : '1px solid transparent',
@@ -112,9 +123,12 @@ const MarketplaceToolbar = ({
           <button
             type="button"
             onClick={() => onViewModeChange('list')}
+            aria-label="List view"
+            aria-pressed={viewMode === 'list'}
+            className="marketplace-toolbar__view-btn"
             style={{
-              width: 32,
-              height: 32,
+              width: 44,
+              height: 44,
               borderRadius: 7,
               boxSizing: 'border-box',
               border: viewMode === 'list' ? '1px solid #282828' : '1px solid transparent',

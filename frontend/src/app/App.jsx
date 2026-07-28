@@ -1,4 +1,5 @@
 import './App.css'
+import './mobile.css'
 import { RouterProvider } from 'react-router'
 import { routes } from './app.routes'
 import { useSelector } from 'react-redux'

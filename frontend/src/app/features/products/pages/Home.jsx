@@ -85,12 +85,14 @@ const Home = () => {
       }}
     >
       <main
+        className="home-main"
         style={{
           flex: 1,
           maxWidth: 1100,
           width: '100%',
           margin: '0 auto',
           padding: '32px 24px 60px',
+          paddingTop: 'calc(64px + 32px)',
           display: 'flex',
           flexDirection: 'column',
           gap: 28,

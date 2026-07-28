@@ -10,6 +10,7 @@ const HeroSection = ({ totalProductsCount = 0 }) => {
   return (
     <div
       data-anim
+      className="hero-section"
       style={{
         borderRadius: 24,
         background: 'linear-gradient(180deg, #111113 0%, #070708 100%)',
@@ -27,7 +28,7 @@ const HeroSection = ({ totalProductsCount = 0 }) => {
         gap: 32,
       }}
     >
-      {/* Editorial High Fashion Ambient Glow */}
+      {/* Editorial Ambient Glow */}
       <div
         style={{
           position: 'absolute',
@@ -45,12 +46,13 @@ const HeroSection = ({ totalProductsCount = 0 }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <span style={{ height: 1, width: 28, background: 'rgba(255,255,255,0.35)' }} />
           <span style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.25em', color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase' }}>
-            ATELIER & HIGH FASHION
+            ATELIER &amp; HIGH FASHION
           </span>
         </div>
 
-        {/* Brand Name — Primary Visual Focus */}
+        {/* Brand Name */}
         <h1
+          className="hero-brand-name"
           style={{
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: '3.6rem',
@@ -65,8 +67,9 @@ const HeroSection = ({ totalProductsCount = 0 }) => {
           Velora
         </h1>
 
-        {/* Tagline — Supporting Statement */}
+        {/* Tagline */}
         <p
+          className="hero-tagline"
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: '1.05rem',
@@ -82,8 +85,8 @@ const HeroSection = ({ totalProductsCount = 0 }) => {
         </p>
       </div>
 
-      {/* ASCII Art greeting */}
-      <div style={{ flexShrink: 0, zIndex: 1, width: 230 }}>
+      {/* ASCII Art greeting — hidden on small mobile via CSS */}
+      <div className="hero-ascii" style={{ flexShrink: 0, zIndex: 1, width: 230 }}>
         <AsciiArt text={greetingText} />
       </div>
     </div>
