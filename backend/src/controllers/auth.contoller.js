@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
-const isProduction = process.env.NODE_ENV === "production" || !!process.env.FRONTEND_URL;
+const isProduction = process.env.NODE_ENV === "production";
 
 const getCookieOptions = () => ({
     httpOnly: true,
@@ -125,11 +125,22 @@ export const googleCallback = async (req, res) => {
 
         res.cookie("token", token, getCookieOptions())
 
-        const targetFrontend = process.env.FRONTEND_URL || "https://velora-one-rouge.vercel.app"
+        let targetFrontend = process.env.FRONTEND_URL;
+        if (!targetFrontend) {
+            targetFrontend = process.env.NODE_ENV === "production"
+                ? "https://velora-one-rouge.vercel.app"
+                : "http://localhost:5173";
+        }
+
         res.redirect(targetFrontend)
     } catch (error) {
         console.error("Error in googleCallback:", error);
-        const targetFrontend = process.env.FRONTEND_URL || "https://velora-one-rouge.vercel.app"
+        let targetFrontend = process.env.FRONTEND_URL;
+        if (!targetFrontend) {
+            targetFrontend = process.env.NODE_ENV === "production"
+                ? "https://velora-one-rouge.vercel.app"
+                : "http://localhost:5173";
+        }
         res.redirect(`${targetFrontend}/login`)
     }
 }
