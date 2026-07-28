@@ -134,7 +134,7 @@ export function NotchNavbar({ className, ...props }) {
                       </Link>
                       <Link
                         to="/register"
-                        className="px-3.5 py-1.5 text-xs font-semibold text-black bg-stone-100 rounded hover:bg-white transition-colors shadow-sm whitespace-nowrap tracking-wider uppercase"
+                        className="text-xs font-semibold text-stone-300 hover:text-white transition-colors whitespace-nowrap bg-transparent tracking-wider uppercase"
                       >
                         Join
                       </Link>
@@ -214,7 +214,7 @@ export function NotchNavbar({ className, ...props }) {
                   </Link>
                   <Link
                     to="/register"
-                    className="flex items-center justify-center p-3 rounded-lg bg-white text-black font-semibold mt-1 tracking-wider uppercase"
+                    className="flex items-center justify-center p-3 rounded-lg border border-stone-800 hover:border-stone-600 font-semibold text-white mt-1 tracking-wider uppercase transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Sign up
