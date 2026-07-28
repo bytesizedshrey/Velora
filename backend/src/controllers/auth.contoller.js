@@ -91,6 +91,7 @@ export const login = async (req, res) => {
 
         return res.status(200).json({
             message: "User logged in successfully",
+            token,
             user: {
                 _id: user._id,
                 email: user.email,
@@ -127,6 +128,7 @@ export const googleCallback = async (req, res) => {
             expiresIn: "7d"
         })
 
+        // Also set cookie as a fallback (works on localhost)
         res.cookie("token", token, getCookieOptions(req))
 
         // Smart production detection: Check FRONTEND_URL, NODE_ENV, or Host header
@@ -141,7 +143,9 @@ export const googleCallback = async (req, res) => {
                 : "http://localhost:5173";
         }
 
-        res.redirect(targetFrontend)
+        // Pass token in URL so frontend stores it as a first-party cookie.
+        // This bypasses Safari/Chrome cross-domain cookie restrictions entirely.
+        res.redirect(`${targetFrontend}?oauth_token=${token}`)
     } catch (error) {
         console.error("Error in googleCallback:", error);
         const hostHeader = req.headers.host || "";

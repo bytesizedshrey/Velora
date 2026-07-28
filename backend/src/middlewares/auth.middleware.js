@@ -3,7 +3,11 @@ import userModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 
 export const authenticateUser = async (req, res, next) => {
-    const token = req.cookies.token;
+    // Accept token from cookie (localhost) OR Authorization header (cross-domain production)
+    const token = req.cookies.token
+        || (req.headers.authorization?.startsWith("Bearer ")
+            ? req.headers.authorization.slice(7)
+            : null);
 
     if (!token) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -28,7 +32,11 @@ export const isAuth = authenticateUser;
 
 export const authenticateSeller = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
+        // Accept token from cookie (localhost) OR Authorization header (cross-domain production)
+        const token = req.cookies.token
+            || (req.headers.authorization?.startsWith("Bearer ")
+                ? req.headers.authorization.slice(7)
+                : null);
 
         if (!token) {
             return res.status(401).json({ message: "Unauthorized - No token provided", success: false });

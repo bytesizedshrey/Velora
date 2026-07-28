@@ -1,10 +1,7 @@
-import axios from "axios";
 import { API_BASE_URL } from "@/shared/config/apiConfig";
+import { createApiInstance } from "@/shared/config/axiosFactory";
 
-const cartApiInstance = axios.create({
-    baseURL: `${API_BASE_URL}/api/cart`,
-    withCredentials: true
-});
+const cartApiInstance = createApiInstance(`${API_BASE_URL}/api/cart`);
 
 export const addItem = async ({ productId, ProductId, variantId, varientId, quantity = 1 }) => {
     const pId = productId || ProductId;
