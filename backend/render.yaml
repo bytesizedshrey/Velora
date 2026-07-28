@@ -13,3 +13,5 @@ services:
         value: 10000
       - key: FRONTEND_URL
         value: https://velora-one-rouge.vercel.app
+      - key: BACKEND_URL
+        value: https://by-jessika-backend.onrender.com

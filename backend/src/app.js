@@ -41,11 +41,12 @@ app.use(cors({
 
 app.use(passport.initialize())
 if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
-    const callbackURL = process.env.BACKEND_URL
-      ? `${process.env.BACKEND_URL.replace(/\/$/, '')}/api/auth/google/callback`
-      : (process.env.NODE_ENV === "production"
-          ? "https://by-jessika-backend.onrender.com/api/auth/google/callback"
-          : "http://localhost:3000/api/auth/google/callback");
+    const backendHost = process.env.BACKEND_URL || 
+      (process.env.NODE_ENV === "production" ? "https://by-jessika-backend.onrender.com" : "http://localhost:3000");
+
+    const callbackURL = `${backendHost.replace(/\/$/, '')}/api/auth/google/callback`;
+
+    console.log(`📌 Google OAuth Strategy configured with callbackURL: ${callbackURL}`);
 
     passport.use(new GoogleStrategy({
         clientID: config.GOOGLE_CLIENT_ID,
