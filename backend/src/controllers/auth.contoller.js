@@ -125,9 +125,14 @@ export const googleCallback = async (req, res) => {
 
         res.cookie("token", token, getCookieOptions())
 
+        // Smart production detection: Check FRONTEND_URL, NODE_ENV, or Host header
+        const hostHeader = req.headers.host || "";
+        const isRenderHost = hostHeader.includes("onrender.com");
+        const isProdEnv = process.env.NODE_ENV === "production" || isRenderHost;
+
         let targetFrontend = process.env.FRONTEND_URL;
         if (!targetFrontend) {
-            targetFrontend = process.env.NODE_ENV === "production"
+            targetFrontend = isProdEnv
                 ? "https://velora-one-rouge.vercel.app"
                 : "http://localhost:5173";
         }
@@ -135,9 +140,13 @@ export const googleCallback = async (req, res) => {
         res.redirect(targetFrontend)
     } catch (error) {
         console.error("Error in googleCallback:", error);
+        const hostHeader = req.headers.host || "";
+        const isRenderHost = hostHeader.includes("onrender.com");
+        const isProdEnv = process.env.NODE_ENV === "production" || isRenderHost;
+
         let targetFrontend = process.env.FRONTEND_URL;
         if (!targetFrontend) {
-            targetFrontend = process.env.NODE_ENV === "production"
+            targetFrontend = isProdEnv
                 ? "https://velora-one-rouge.vercel.app"
                 : "http://localhost:5173";
         }
