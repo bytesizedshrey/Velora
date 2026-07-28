@@ -41,8 +41,12 @@ app.use(cors({
 
 app.use(passport.initialize())
 if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
-    const backendHost = process.env.BACKEND_URL || 
-      (process.env.NODE_ENV === "production" ? "https://by-jessika-backend.onrender.com" : "http://localhost:3000");
+    const isRender = !!(process.env.RENDER || process.env.RENDER_SERVICE_ID || process.env.RENDER_EXTERNAL_URL);
+    const isProdEnv = isRender || (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === "production");
+
+    const backendHost = process.env.BACKEND_URL 
+      || process.env.RENDER_EXTERNAL_URL 
+      || (isProdEnv ? "https://by-jessika-backend.onrender.com" : "http://localhost:3000");
 
     const callbackURL = `${backendHost.replace(/\/$/, '')}/api/auth/google/callback`;
 
