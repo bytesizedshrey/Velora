@@ -9,11 +9,7 @@ const LandingPage = () => {
   const { user } = useSelector((state) => state.auth)
 
   const handleCTA = () => {
-    if (user) {
-      navigate('/marketplace')
-    } else {
-      navigate('/register')
-    }
+    navigate('/login')
   }
 
   return (

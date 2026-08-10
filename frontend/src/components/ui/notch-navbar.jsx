@@ -41,7 +41,6 @@ export function NotchNavbar({ className, ...props }) {
 
   const items = {
     left: [
-      { label: "Collection", href: "/marketplace", icon: Home },
       { label: cartCount > 0 ? `Bag (${cartCount})` : "Bag", href: "/cart", icon: ShoppingBag },
       ...(isSeller ? [{ label: "Atelier", href: "/seller/dashboard", icon: LayoutDashboard }] : [])
     ],

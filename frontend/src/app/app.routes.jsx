@@ -2,7 +2,6 @@ import { createBrowserRouter, Outlet, useLocation } from "react-router";
 
 import Register from "./features/auth/pages/Register";
 import Login from "./features/auth/pages/Login";
-import Home from "./features/products/pages/Home";
 import CreateProduct from "./features/products/pages/CreateProduct";
 import Dashboard from "./features/products/pages/Dashboard";
 import ProductDetail from "./features/products/pages/ProductDetail";
@@ -76,10 +75,6 @@ export const routes = createBrowserRouter([
       {
         element: <ProtectedLayout />,
         children: [
-          {
-            path: "marketplace",
-            element: <Home />,
-          },
           {
             path: "product/:productId",
             element: <ProductDetail />,
