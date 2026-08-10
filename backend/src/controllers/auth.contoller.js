@@ -143,9 +143,11 @@ export const googleCallback = async (req, res) => {
                 : "http://localhost:5173";
         }
 
+        const route = user.role === 'seller' ? '/seller/dashboard' : '/marketplace';
+
         // Pass token in URL so frontend stores it as a first-party cookie.
         // This bypasses Safari/Chrome cross-domain cookie restrictions entirely.
-        res.redirect(`${targetFrontend}?oauth_token=${token}`)
+        res.redirect(`${targetFrontend}${route}?oauth_token=${token}`)
     } catch (error) {
         console.error("Error in googleCallback:", error);
         const hostHeader = req.headers.host || "";

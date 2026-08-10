@@ -220,9 +220,12 @@ const LoginForm = () => {
     try {
       const resultAction = await dispatch(loginUser(formData))
       if (loginUser.fulfilled.match(resultAction)) {
-        navigate("/marketplace")
-      } else if(user.role == "seller"){
-        navigate("/seller/dashboard")
+        const loggedInUser = resultAction.payload.user
+        if (loggedInUser.role === "seller") {
+          navigate("/seller/dashboard")
+        } else {
+          navigate("/marketplace")
+        }
       }
     } catch (error) {
       console.error("Login Failed",error)

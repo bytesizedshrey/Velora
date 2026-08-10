@@ -239,7 +239,12 @@ const RegisterForm = () => {
 
     const resultAction = await dispatch(registerUser(payload))
     if (registerUser.fulfilled.match(resultAction)) {
-      navigate("/marketplace") // Navigate to marketplace on success
+      const loggedInUser = resultAction.payload.user
+      if (loggedInUser.role === "seller") {
+        navigate("/seller/dashboard")
+      } else {
+        navigate("/marketplace")
+      }
     }
   }
 
