@@ -220,7 +220,7 @@ const LoginForm = () => {
     try {
       const resultAction = await dispatch(loginUser(formData))
       if (loginUser.fulfilled.match(resultAction)) {
-        navigate("/")
+        navigate("/marketplace")
       } else if(user.role == "seller"){
         navigate("/seller/dashboard")
       }
