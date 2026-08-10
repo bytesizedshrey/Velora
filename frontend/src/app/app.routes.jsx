@@ -8,6 +8,7 @@ import Dashboard from "./features/products/pages/Dashboard";
 import ProductDetail from "./features/products/pages/ProductDetail";
 import Cart from "./features/cart/pages/Cart";
 import OrderSuccess from "./features/cart/pages/OrderSuccess";
+import LandingPage from "./features/landing/pages/LandingPage";
 
 import Protected from "./features/auth/components/Protected";
 import useLenis from "../shared/hooks/useLenis";
@@ -23,15 +24,18 @@ const RootLayout = () => {
     pathname.startsWith(route)
   );
 
+  const isLandingPage = pathname === "/";
+  const hideNavbar = isAuthPage || isLandingPage;
+
   useLenis(isAuthPage);
 
   return (
     <>
-      {!isAuthPage && <NotchNavbar />}
+      {!hideNavbar && <NotchNavbar />}
 
       <main
         className={`min-h-screen bg-[#040404] ${
-          !isAuthPage ? "pt-28" : ""
+          !hideNavbar ? "pt-28" : ""
         }`}
       >
         <Outlet />
@@ -58,6 +62,10 @@ export const routes = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
         path: "register",
         element: <Register />,
       },
@@ -69,7 +77,7 @@ export const routes = createBrowserRouter([
         element: <ProtectedLayout />,
         children: [
           {
-            index: true,
+            path: "marketplace",
             element: <Home />,
           },
           {
