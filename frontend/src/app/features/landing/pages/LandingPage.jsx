@@ -36,34 +36,7 @@ const LandingPage = () => {
         padding: '20px'
       }}>
         
-        {/* Floating Images Container */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-          
-          {/* Top Left Image */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            style={{ position: 'absolute', top: '15%', left: '10%', width: 140, height: 180, borderRadius: 12, overflow: 'hidden' }}
-            className="hidden md:block"
-          >
-            <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop&q=60" alt="Fashion 1" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </motion.div>
 
-          {/* Top Right Image */}
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            style={{ position: 'absolute', top: '10%', right: '20%', width: 160, height: 200, borderRadius: 12, overflow: 'hidden' }}
-            className="hidden lg:block"
-          >
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=60" alt="Fashion 2" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </motion.div>
-
-
-          
-        </div>
 
         {/* Central Typography */}
         <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', width: '100%', maxWidth: 1000 }}>
