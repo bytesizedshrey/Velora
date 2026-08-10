@@ -113,7 +113,7 @@ export default function ProductDetail({ productData = null, loadingState = null,
     }
   }
 
-  const goBack = () => navigate(isSeller ? '/seller/dashboard' : '/')
+  const goBack = () => navigate(isSeller ? '/seller/dashboard' : '/marketplace')
   const viewPublicPage = () => navigate(`/product/${productId || product?._id}`)
   const addToCart = () => alert(`Added "${product?.title}" to cart!`)
   const buyNow = () => alert(`Checkout for "${product?.title}"!`)
@@ -316,8 +316,8 @@ export default function ProductDetail({ productData = null, loadingState = null,
   }
 
   return (
-    <div ref={pageRef} style={S.page}>
-      <div style={S.shell}>
+    <div ref={pageRef} className="pd-page">
+      <div className="pd-shell">
 
         {/* Back Link & Header Badge */}
         <div data-fade style={{ marginBottom: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -369,7 +369,7 @@ export default function ProductDetail({ productData = null, loadingState = null,
         </div>
 
         {/* Main Grid Layout */}
-        <div style={S.grid}>
+        <div className="pd-grid">
 
           {/* ── LEFT: 3D Coverflow Diagonal Carousel for active variant ── */}
           <div data-fade style={{ position: 'sticky', top: TOP_PAD + 16 }}>
@@ -383,12 +383,12 @@ export default function ProductDetail({ productData = null, loadingState = null,
           </div>
 
           {/* ── RIGHT: Product Story Column (Non-boxed) ── */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="pd-info-col">
 
             {/* 1. Category & Title */}
             <div data-fade>
               {category && <span style={S.sectionLabel}>{category}</span>}
-              <h1 style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em', color: '#fff', margin: 0 }}>
+              <h1 className="pd-title">
                 {product.title}
               </h1>
               <p style={{ marginTop: 10, fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>
@@ -416,7 +416,7 @@ export default function ProductDetail({ productData = null, loadingState = null,
             {/* 2. Price & Availability */}
             <div data-fade>
               <span style={S.sectionLabel}>{isSeller ? 'Price & Inventory' : 'Price'}</span>
-              <p style={{ fontSize: 38, fontWeight: 700, letterSpacing: '-0.02em', color: '#fff', margin: 0 }}>
+              <p className="pd-price">
                 {currency} {price.toLocaleString('en-IN')}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
@@ -830,51 +830,16 @@ function StickyBuyBar({ visible, product, activeVariant, variantImg, price, curr
     || 'Standard'
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 9999,
-        transform: visible ? 'translateY(0)' : 'translateY(110%)',
-        transition: 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)',
-        pointerEvents: visible ? 'auto' : 'none',
-      }}
-    >
+    <div className={`pd-sticky-bar ${visible ? 'visible' : ''}`}>
       {/* Gradient fade above bar */}
-      <div style={{
-        height: 48,
-        background: 'linear-gradient(to top, rgba(6,6,6,0.95), transparent)',
-        pointerEvents: 'none',
-      }} />
+      <div className="pd-sticky-fade" />
 
       {/* Main bar */}
-      <div style={{
-        background: 'linear-gradient(180deg, #111111 0%, #080808 100%)',
-        borderTop: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '0 -8px 40px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.08)',
-        padding: '14px 24px 22px',
-      }}>
-        <div style={{
-          maxWidth: 960,
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 16,
-        }}>
-
+      <div className="pd-sticky-inner">
+        <div className="pd-sticky-content">
           {/* Variant thumbnail + info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
-            <div style={{
-              width: 44,
-              height: 44,
-              borderRadius: 10,
-              overflow: 'hidden',
-              flexShrink: 0,
-              border: '1px solid rgba(255,255,255,0.12)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.8)',
-            }}>
+          <div className="pd-sticky-info">
+            <div className="pd-sticky-thumbnail">
               <img
                 src={variantImg}
                 alt={variantTitle}
@@ -909,118 +874,114 @@ function StickyBuyBar({ visible, product, activeVariant, variantImg, price, curr
             </div>
           </div>
 
-          {/* Quantity stepper */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 12,
-            background: 'rgba(255,255,255,0.04)',
-            flexShrink: 0,
-          }}>
+          <div className="pd-sticky-actions">
+            {/* Quantity stepper */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 12,
+              background: 'rgba(255,255,255,0.04)',
+              flexShrink: 0,
+            }}>
+              <button
+                onClick={() => setQty(q => Math.max(1, q - 1))}
+                disabled={!inStock}
+                style={{
+                  width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 18, fontWeight: 300, color: 'rgba(255,255,255,0.4)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                }}
+                onMouseEnter={e => { if (inStock) e.currentTarget.style.color = '#fff' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              >
+                −
+              </button>
+              <span style={{ width: 36, textAlign: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
+                {qty}
+              </span>
+              <button
+                onClick={() => setQty(q => q + 1)}
+                disabled={!inStock}
+                style={{
+                  width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 18, fontWeight: 300, color: 'rgba(255,255,255,0.4)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                }}
+                onMouseEnter={e => { if (inStock) e.currentTarget.style.color = '#fff' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              >
+                +
+              </button>
+            </div>
+
+            {/* Add to Cart CTA */}
             <button
-              onClick={() => setQty(q => Math.max(1, q - 1))}
-              disabled={!inStock}
+              onClick={onAddToCart}
+              disabled={!inStock || addingToCart}
+              onMouseDown={() => setBarDown(true)}
+              onMouseUp={() => setBarDown(false)}
+              onMouseLeave={() => setBarDown(false)}
+              className="pd-sticky-cta"
               style={{
-                width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 18, fontWeight: 300, color: 'rgba(255,255,255,0.4)',
-                background: 'none', border: 'none', cursor: 'pointer',
+                color: inStock ? '#000000' : 'rgba(255,255,255,0.3)',
+                background: inStock
+                  ? (barDown
+                      ? 'linear-gradient(180deg, #d4d4d4 0%, #a3a3a3 100%)'
+                      : 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)')
+                  : 'rgba(255,255,255,0.06)',
+                borderTop: inStock ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
+                borderLeft: inStock ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
+                borderRight: inStock ? '1px solid #999' : '1px solid rgba(255,255,255,0.04)',
+                borderBottom: inStock ? '1px solid #999' : '1px solid rgba(255,255,255,0.04)',
+                boxShadow: inStock
+                  ? (barDown
+                      ? 'inset 0 3px 8px rgba(0,0,0,0.15)'
+                      : '0 6px 20px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.9)')
+                  : 'none',
+                cursor: (inStock && !addingToCart) ? 'pointer' : 'not-allowed',
+                opacity: (inStock && !addingToCart) ? 1 : 0.4,
+                transform: barDown ? 'translateY(1px)' : 'none',
+                transition: 'all 0.12s ease',
               }}
-              onMouseEnter={e => { if (inStock) e.currentTarget.style.color = '#fff' }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
             >
-              −
+              {addingToCart ? (
+                <>
+                  <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.3"/>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                  </svg>
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  {inStock ? 'Add to Cart' : 'Out of Stock'}
+                </>
+              )}
             </button>
-            <span style={{ width: 36, textAlign: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
-              {qty}
-            </span>
+
+            {/* Dismiss */}
             <button
-              onClick={() => setQty(q => q + 1)}
-              disabled={!inStock}
+              onClick={onDismiss}
               style={{
-                width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 18, fontWeight: 300, color: 'rgba(255,255,255,0.4)',
-                background: 'none', border: 'none', cursor: 'pointer',
+                width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                color: 'rgba(255,255,255,0.25)', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.15s',
               }}
-              onMouseEnter={e => { if (inStock) e.currentTarget.style.color = '#fff' }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+              title="Dismiss"
             >
-              +
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
           </div>
-
-          {/* Add to Cart CTA */}
-          <button
-            onClick={onAddToCart}
-            disabled={!inStock || addingToCart}
-            onMouseDown={() => setBarDown(true)}
-            onMouseUp={() => setBarDown(false)}
-            onMouseLeave={() => setBarDown(false)}
-            style={{
-              height: 46,
-              padding: '0 28px',
-              borderRadius: 14,
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: '0.02em',
-              color: inStock ? '#000000' : 'rgba(255,255,255,0.3)',
-              background: inStock
-                ? (barDown
-                    ? 'linear-gradient(180deg, #d4d4d4 0%, #a3a3a3 100%)'
-                    : 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)')
-                : 'rgba(255,255,255,0.06)',
-              borderTop: inStock ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
-              borderLeft: inStock ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
-              borderRight: inStock ? '1px solid #999' : '1px solid rgba(255,255,255,0.04)',
-              borderBottom: inStock ? '1px solid #999' : '1px solid rgba(255,255,255,0.04)',
-              boxShadow: inStock
-                ? (barDown
-                    ? 'inset 0 3px 8px rgba(0,0,0,0.15)'
-                    : '0 6px 20px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.9)')
-                : 'none',
-              cursor: (inStock && !addingToCart) ? 'pointer' : 'not-allowed',
-              opacity: (inStock && !addingToCart) ? 1 : 0.4,
-              transform: barDown ? 'translateY(1px)' : 'none',
-              transition: 'all 0.12s ease',
-              display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
-            }}
-          >
-            {addingToCart ? (
-              <>
-                <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.3"/>
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-                </svg>
-                Adding...
-              </>
-            ) : (
-              <>
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                {inStock ? 'Add to Cart' : 'Out of Stock'}
-              </>
-            )}
-          </button>
-
-          {/* Dismiss */}
-          <button
-            onClick={onDismiss}
-            style={{
-              width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.25)', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
-            title="Dismiss"
-          >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
         </div>
       </div>
     </div>

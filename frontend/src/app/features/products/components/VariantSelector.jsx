@@ -160,11 +160,7 @@ export const VariantSelector = ({
             Available Variants ({variantsList.length})
           </span>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(auto-fill, minmax(${variantsList.length <= 2 ? '160px' : '140px'}, 1fr))`,
-            gap: 12,
-          }}>
+          <div className="pd-variant-grid">
             {variantsList.map((item, idx) => {
               const isSelected = selectedVariantIdx === idx
 
