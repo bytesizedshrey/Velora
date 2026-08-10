@@ -39,12 +39,13 @@ const LandingPage = () => {
 
 
         {/* Central Typography */}
-        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', width: '100%', maxWidth: 1000 }}>
+        <div className="landing-main" style={{ position: 'relative', zIndex: 10, textAlign: 'center', width: '100%', maxWidth: 1000 }}>
           
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            className="landing-title"
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: 'clamp(3.5rem, 8vw, 7rem)',
@@ -59,10 +60,11 @@ const LandingPage = () => {
           >
             <span>EVERYTHING</span>
             
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'clamp(12px, 3vw, 24px)', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <span className="landing-title-row" style={{ display: 'inline-flex', alignItems: 'center', gap: 'clamp(12px, 3vw, 24px)', flexWrap: 'wrap', justifyContent: 'center' }}>
               <span>TO</span>
               {/* Inline Pill */}
               <span 
+                className="landing-pill"
                 onClick={handleCTA}
                 style={{
                   display: 'inline-flex',

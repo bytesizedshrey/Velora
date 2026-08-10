@@ -170,6 +170,39 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   LANDING PAGE (MOBILE)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+  .landing-main {
+    padding: 32px 16px !important;
+  }
+  
+  .landing-title {
+    /* Scale down the massive text so it doesn't clip on 320px */
+    font-size: clamp(2.5rem, 12vw, 3.5rem) !important;
+    gap: 16px !important;
+  }
+  
+  .landing-title-row {
+    /* Stack "TO", "Wear Confidence", and "EXPRESS" vertically on mobile */
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+  
+  .landing-pill {
+    /* Full width touch target for mobile, stacked cleanly */
+    font-size: 1.25rem !important;
+    padding: 18px 24px !important;
+    width: 100% !important;
+    max-width: 300px !important;
+    justify-content: center !important;
+    transform: none !important; /* Remove optical alignment shift on mobile */
+    margin: 8px 0 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
    HOME PAGE
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 1023px) {
