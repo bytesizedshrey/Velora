@@ -94,7 +94,7 @@ const LandingPage = () => {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  background: '#9cf89a', // Green from the reference
+                  background: '#d4d4d4', // Gray pill
                   color: '#000000',
                   padding: 'clamp(10px, 2vw, 16px) clamp(20px, 3vw, 32px)',
                   borderRadius: 100,
